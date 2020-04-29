@@ -16,16 +16,17 @@ public class Manager {
     private final SeverLogger severLogger;
     private SqsClient tasksSqs;
 
-    public Manager(String tasksSqsAddress,String workerAmi ,String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
+    public Manager(String tasksSqsAddress, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
         this.tasksSqsAddress = tasksSqsAddress;
         this.workerAmi = workerAmi;
         this.workerTag = workerTag;
         this.infoLogger = infoLogger;
         this.severLogger = severLogger;
-        tasksSqs = SqsClient.builder().region(Region.US_EAST_1).build();;
+        tasksSqs = SqsClient.builder().region(Region.US_EAST_1).build();
+        ;
     }
 
-    public void serve(){
+    public void serve() {
         GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
                 .queueName(this.tasksSqsAddress)
                 .build();
@@ -33,25 +34,56 @@ public class Manager {
         ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .build();
-        while (true){
+        while (true) {
             for (Message m : tasksSqs.receiveMessage(receiveRequest).messages()) {
                 DeleteMessageRequest deleteRequest = DeleteMessageRequest.builder()
                         .queueUrl(queueUrl)
                         .receiptHandle(m.receiptHandle())
                         .build();
                 infoLogger.log(String.format("Got message: %s\nCreating a worker to handle the message", m.toString()));
-                System.out.println("The message: "+m.toString());
+                System.out.println("The message: " + m.toString());
                 createWorker(m.toString());
                 tasksSqs.deleteMessage(deleteRequest);
             }
         }
     }
 
-    private void createWorker(String toString) {
+    private void createWorker(String msg) {
         Ec2Client ec2 = Ec2Client.create();
-//        String awsAccessKeyId = args[1];
+        RunInstancesRequest runRequest = RunInstancesRequest.builder()
+                .imageId(this.workerAmi)
+                .instanceType(InstanceType.T2_MICRO)
+                .maxCount(1)
+                .minCount(1)
+                .keyName("myKeyPair")
+                .userData(Base64.getEncoder().encodeToString(getWorkerScript(msg).getBytes()))
+                .build();
+
+        RunInstancesResponse response = ec2.runInstances(runRequest);
+        String instanceId = response.instances().get(0).instanceId();
+        Tag tag = Tag.builder()
+                .key("Name")
+                .value(this.workerTag)
+                .build();
+
+        CreateTagsRequest tagsRequest = CreateTagsRequest.builder()
+                .resources(instanceId)
+                .tags(tag)
+                .build();
+
+        try {
+            ec2.createTags(tagsRequest);
+            infoLogger.log(String.format("Successfully started EC2 instance %s based on AMI %s", instanceId, this.workerAmi));
+        } catch (Ec2Exception e) {
+            severLogger.log("createWorker() failed", e);
+            return;
+        }
+    }
+
+    private static String getWorkerScript(String arg) {
+        //        String awsAccessKeyId = args[1];
 //        String awsSecretAccessKey = args[2];
-        String script = String.join("\n",
+        return String.join("\n",
                 "#!/bin/bash",
                 "set -e -x",
 //                String.format("aws configure set aws_access_key_id %s", awsAccessKeyId),
@@ -69,35 +101,7 @@ public class Manager {
                 "git pull origin master",
                 "mvn install",
                 "cd target",
-                "java -jar theJar.jar"
+                String.format("java -jar theJar.jar %s",arg)
         );
-        RunInstancesRequest runRequest = RunInstancesRequest.builder()
-                .imageId(this.workerAmi)
-                .instanceType(InstanceType.T2_MICRO)
-                .maxCount(1)
-                .minCount(1)
-                .keyName("myKeyPair")
-                .userData(Base64.getEncoder().encodeToString(script.getBytes()))
-                .build();
-
-        RunInstancesResponse response = ec2.runInstances(runRequest);
-        String instanceId = response.instances().get(0).instanceId();
-        Tag tag = Tag.builder()
-                .key("Name")
-                .value(this.workerTag)
-                .build();
-
-        CreateTagsRequest tagsRequest = CreateTagsRequest.builder()
-                .resources(instanceId)
-                .tags(tag)
-                .build();
-
-        try {
-            ec2.createTags(tagsRequest);
-            infoLogger.log(String.format("Successfully started EC2 instance %s based on AMI %s",instanceId, this.workerAmi));
-        }catch (Ec2Exception e){
-            severLogger.log("createWorker() failed", e);
-            return;
-        }
     }
 }
