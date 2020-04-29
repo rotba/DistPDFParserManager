@@ -55,6 +55,30 @@ public class MainTest {
                     .build();
             sqs.deleteMessage(deleteRequest);
         }
+        DescribeInstancesRequest request = DescribeInstancesRequest.builder().build();
+        final Ec2Client ec2 = Ec2Client.builder().build();
+        boolean done =false;
+        while(!done) {
+            DescribeInstancesResponse response = ec2.describeInstances(request);
+            for(Reservation reservation : response.reservations()) {
+                for(Instance instance : reservation.instances()) {
+                    for (Tag t:instance.tags()) {
+                        if (t.key().equals("Name") &&t.value().equals(Main.WORKER_TAG)){
+                            if (instance.launchTime().isAfter(testStarTime)){
+                                TerminateInstancesRequest terminateRequest = TerminateInstancesRequest.builder()
+                                        .instanceIds(instance.instanceId())
+                                        .build();
+
+                                ec2.terminateInstances(terminateRequest);
+                            }
+                        }
+                    }
+                }
+            }
+            if(response.nextToken() == null) {
+                done = true;
+            }
+        }
     }
 
     private boolean aNewWorkerExist() {
