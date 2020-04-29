@@ -1,7 +1,7 @@
-Apr 29, 2020 10:49:23 AM logging.Logger log
+Apr 29, 2020 10:58:44 AM logging.Logger log
 INFO: Start
-Apr 29, 2020 10:49:24 AM logging.Logger log
-INFO: Got message: Message(MessageId=e6939887-4ab1-4c7d-a72f-ed68d89a128a, ReceiptHandle=AQEB+1hfwub703qvk8nduCBonzX8e0qwc7E0wWFPxY28tOJ4rNiFXYVSdPVFWRy4MXE5+84rDOlAA/JUTxKR/4qNECc+CaSqpkv3/hG3UPSqL5GGBqhydC2r4gZJE/tQolyy4Bp7DyYkNucHybM0XNAXzaNdjoEVSw8xLRYHneM/cQYB9nqOPXHyjdWxCx3jGuhrU9q96Q9BzjaU6mHVp7LKpZyoL8tX0Uk5v6BwBCCwEmrmfP3RAdIl9NA9vd/IoZjZrezM9uBQBaW9GarQr+O+vw8aHdopGi0sR+mBiEsDusY7NB08uTLQ4ghiAZxwjLysQkJIQXmJhRcy8AxTZ8HD7lLhUdNk7PfM4JrZ4iH9sJV+AMNmjH1WPkccTHN2Jz5yWMpRJJAd/VFBuIVSOpgLyA==, MD5OfBody=a52eb2a705af77d1d3b8283179d09089, Body=ToImage	http://www.jewishfederations.org/local_includes/downloads/39497.pdf, Attributes=software.amazon.awssdk.core.util.DefaultSdkAutoConstructMap@45d17df1, MessageAttributes=software.amazon.awssdk.core.util.DefaultSdkAutoConstructMap@45d17df1)
+Apr 29, 2020 10:58:45 AM logging.Logger log
+INFO: Got message: Message(MessageId=5b21046c-54a9-4786-8b1b-3a13252e7e67, ReceiptHandle=AQEBCmdh9p1CwNjnD/js93WX1gWmgYXeJQQkoOjl02voz74xPHn16ces3Yoprp3vNXFB7vnJVTQVjX+Bi/9l5l2eZfIK6D2REHcXLb5TAhS2kbddwhkuZikarkvNqeIAVgMaIS9SdnFFRdFDVYbgqiLxzsf4j/bdhEX8f/Wan8Hymu7ysStQarUoi5rU7xy3sYmQ3M792LE6WU5QW4nFJB+hq8Bc3Ll+LdPOlyKQGDwcR5ABe3N15r/QmUAaRfCvYTbgbZDCybTAr6rh5TGI2iyMv9TRFus9EsmdCiEJl1tU+e6YUwJ4uA4bxcUlRbfM8+jilmPNIpFzCilbwIc15sQ9Ztt7yvdiHzpYOmLvQ8o48mwHGijZeAJbFbGcu4YQjtZF5B+HhiJxQlKUbGl9snO1+A==, MD5OfBody=a52eb2a705af77d1d3b8283179d09089, Body=ToImage	http://www.jewishfederations.org/local_includes/downloads/39497.pdf, Attributes=software.amazon.awssdk.core.util.DefaultSdkAutoConstructMap@2ef6f4df, MessageAttributes=software.amazon.awssdk.core.util.DefaultSdkAutoConstructMap@2ef6f4df)
 Creating a worker to handle the message
-Apr 29, 2020 10:49:26 AM logging.Logger log
-INFO: Successfully started EC2 instance i-06b42749e4594887e based on AMI ami-0062816003cfcacd3
+Apr 29, 2020 10:58:48 AM logging.Logger log
+INFO: Successfully started EC2 instance i-051e28e9649e24df7 based on AMI ami-0062816003cfcacd3
