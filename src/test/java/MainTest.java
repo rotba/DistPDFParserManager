@@ -5,10 +5,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
-import software.amazon.awssdk.services.sqs.model.CreateQueueResponse;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.*;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -48,6 +45,16 @@ public class MainTest {
     @After
     public void tearDown() throws Exception {
         theMainThread.interrupt();
+        ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .build();
+        for (Message m : sqs.receiveMessage(receiveRequest).messages()) {
+            DeleteMessageRequest deleteRequest = DeleteMessageRequest.builder()
+                    .queueUrl(queueUrl)
+                    .receiptHandle(m.receiptHandle())
+                    .build();
+            sqs.deleteMessage(deleteRequest);
+        }
     }
 
     private boolean aNewWorkerExist() {
@@ -59,7 +66,7 @@ public class MainTest {
             for(Reservation reservation : response.reservations()) {
                 for(Instance instance : reservation.instances()) {
                     for (Tag t:instance.tags()) {
-                        if (t.key().equals("Worker")){
+                        if (t.key().equals("Name") &&t.value().equals(Main.WORKER_TAG)){
                             if (instance.launchTime().isAfter(testStarTime)){
                                 return true;
                             }
