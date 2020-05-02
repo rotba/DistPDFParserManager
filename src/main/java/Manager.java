@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
 import java.util.Base64;
+import java.util.List;
 
 public class Manager {
     private String tasksSqsAddress;
@@ -14,7 +15,7 @@ public class Manager {
     private String workerTag;
     private final InfoLogger infoLogger;
     private final SeverLogger severLogger;
-    private SqsClient tasksSqs;
+    private SqsClient sqs;
 
     public Manager(String tasksSqsAddress, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
         this.tasksSqsAddress = tasksSqsAddress;
@@ -22,30 +23,8 @@ public class Manager {
         this.workerTag = workerTag;
         this.infoLogger = infoLogger;
         this.severLogger = severLogger;
-        tasksSqs = SqsClient.builder().region(Region.US_EAST_1).build();
+        sqs = SqsClient.builder().region(Region.US_EAST_1).build();
         ;
-    }
-
-    public void serve() {
-        GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
-                .queueName(this.tasksSqsAddress)
-                .build();
-        String queueUrl = tasksSqs.getQueueUrl(getQueueUrlRequest).queueUrl();
-        ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
-                .queueUrl(queueUrl)
-                .build();
-        while (true) {
-            for (Message m : tasksSqs.receiveMessage(receiveRequest).messages()) {
-                DeleteMessageRequest deleteRequest = DeleteMessageRequest.builder()
-                        .queueUrl(queueUrl)
-                        .receiptHandle(m.receiptHandle())
-                        .build();
-                infoLogger.log(String.format("Got message: %s\nCreating a worker to handle the message", m.toString()));
-                System.out.println("The message: " + m.toString());
-                createWorker(m.toString());
-                tasksSqs.deleteMessage(deleteRequest);
-            }
-        }
     }
 
     private void createWorker(String msg) {
@@ -101,7 +80,32 @@ public class Manager {
                 "git pull origin master",
                 "mvn install",
                 "cd target",
-                String.format("java -jar theJar.jar %s",arg)
+                String.format("java -jar theJar.jar %s", arg)
         );
     }
+
+    public void serve() {
+        String queueUrl = sqs.getQueueUrl(
+                GetQueueUrlRequest.builder()
+                        .queueName(this.tasksSqsAddress)
+                        .build()
+        ).toString();
+        infoLogger.log("serving");
+        while (true) {
+            List<Message> messages = sqs.receiveMessage(ReceiveMessageRequest.builder()
+                    .queueUrl(queueUrl)
+                    .maxNumberOfMessages(1)
+                    .build())
+                    .messages();
+            if (messages.size() == 0) continue;
+            Task task = toTask(messages.get(0));
+            infoLogger.log(String.format("Handling %s", task.toString()));
+            task.visit(this);
+            sqs.deleteMessage(DeleteMessageRequest.builder()
+                    .queueUrl(queueUrl)
+                    .receiptHandle(task.getMessage().receiptHandle())
+                    .build());
+        }
+    }
+
 }

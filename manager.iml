@@ -51,5 +51,6 @@
     <orderEntry type="library" name="Maven: software.amazon.awssdk:s3:2.5.10" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:aws-xml-protocol:2.5.10" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:sqs:2.5.10" level="project" />
+    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.4" level="project" />
   </component>
 </module>
