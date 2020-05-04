@@ -54,7 +54,6 @@ public class InstancesBalancingTest extends MainTest {
         }
         while (out.forTestingGetNumOfInstances() > 1) {
         }
-        Thread.sleep(2000);
         assertEquals(1, countWorkers());
     }
 }

@@ -139,13 +139,10 @@ public class InstancesBalancing implements Runnable {
         AtomicInteger pendingTasksSnapShot  = new AtomicInteger(0);
         while (true){
             try {
-                Thread.sleep(2*1000);
                 workingInstances.set(checkNumberOfWorkers());
-                infoLogger.log(String.format("Counted %d worker instances", workingInstances.get()));
                 synchronized (this.pendingTasks) {
                     pendingTasksSnapShot.set(this.pendingTasks.intValue());
                 }
-                infoLogger.log(String.format("%d pending tasks", pendingTasksSnapShot.get()));
                 if (workingInstances.get() == 0 && pendingTasksSnapShot.get() == 0) {
                     continue;
                 } else if (workingInstances.get() == 0 && pendingTasksSnapShot.get() > 0) {
