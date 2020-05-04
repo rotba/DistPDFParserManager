@@ -13,19 +13,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OperationsProduction implements Runnable {
     private final String operationsSqsName;
     private String resultsSqsName;
     private final String resultsBucket;
-    private Integer numOfPendingOperations;
+    private AtomicInteger numOfPendingOperations;
     private ConcurrentLinkedQueue<Task.NewTask> queue;
     private SqsClient sqs;
     private final InfoLogger infoLogger;
     private final SeverLogger severLogger;
     private final String operationsQUrl;
 
-    public OperationsProduction(String operationsSqsName, String resultsSqsName, String resultsBucket, Integer numOfPendingOperations, ConcurrentLinkedQueue<Task.NewTask> queue, Region region, InfoLogger infoLogger, SeverLogger severLogger) {
+    public OperationsProduction(String operationsSqsName, String resultsSqsName, String resultsBucket, AtomicInteger numOfPendingOperations, ConcurrentLinkedQueue<Task.NewTask> queue, Region region, InfoLogger infoLogger, SeverLogger severLogger) {
         this.operationsSqsName = operationsSqsName;
         this.resultsSqsName = resultsSqsName;
         this.resultsBucket = resultsBucket;

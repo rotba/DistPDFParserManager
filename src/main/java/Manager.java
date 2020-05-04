@@ -2,16 +2,13 @@ import logging.InfoLogger;
 import logging.SeverLogger;
 import org.apache.commons.cli.ParseException;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Manager {
     private String operationsSqsName;
@@ -26,7 +23,7 @@ public class Manager {
     private SqsClient sqs;
     private ConcurrentLinkedQueue<Task.NewTask> newTasks;
     private Integer workingInstances;
-    private Integer numberOfPendingTasks;
+    private AtomicInteger numberOfPendingTasks;
     private Thread operationsProducer;
     private Thread operationsResultsConsumer;
     private Thread instancesBalancer;
@@ -44,7 +41,7 @@ public class Manager {
                         .build()
         ).toString();
         newTasks = new ConcurrentLinkedQueue();
-        numberOfPendingTasks = 0;
+        numberOfPendingTasks.set(0);
         workingInstances = 0;
         operationsSqsName = "rotemb271Operations"+new Date().getTime();
         operationsResultsSqsName = "rotemb271OperationResults"+new Date().getTime();

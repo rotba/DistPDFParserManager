@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.sqs.model.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertTrue;
 
@@ -50,7 +51,7 @@ public class OperationProductionTest extends MainTest{
                 operationSqsName,
                 resultsSqsName,
                 resultsBucket,
-                0,
+                new AtomicInteger(),
                 null,
                 Region.US_EAST_1,
                 Main.generateInfoLogger(),

@@ -1,2 +1,24 @@
-May 04, 2020 5:15:18 PM logging.Logger log
-INFO: Start consuming results
+May 04, 2020 6:54:40 PM logging.Logger log
+INFO: Terminating 100 instances
+May 04, 2020 6:55:07 PM logging.Logger log
+INFO: Counted 0 worker instances
+May 04, 2020 6:55:07 PM logging.Logger log
+INFO: 200 pending tasks
+May 04, 2020 6:55:07 PM logging.Logger log
+INFO: Creating 1 instances
+May 04, 2020 6:55:26 PM logging.Logger log
+INFO: Counted 1 worker instances
+May 04, 2020 6:55:26 PM logging.Logger log
+INFO: 200 pending tasks
+May 04, 2020 6:55:26 PM logging.Logger log
+INFO: Creating 1 instances
+May 04, 2020 6:55:40 PM logging.Logger log
+INFO: Counted 2 worker instances
+May 04, 2020 6:55:40 PM logging.Logger log
+INFO: 100 pending tasks
+May 04, 2020 6:55:40 PM logging.Logger log
+INFO: Terminating 1 instances
+May 04, 2020 6:56:05 PM logging.Logger log
+INFO: Counted 1 worker instances
+May 04, 2020 6:56:05 PM logging.Logger log
+INFO: 100 pending tasks
