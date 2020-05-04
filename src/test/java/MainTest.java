@@ -12,14 +12,12 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Date;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.Assert.assertTrue;
 
-public class MainTest {
+public abstract class MainTest {
     protected SqsClient sqs;
     protected Ec2Client ec2;
     protected S3Client s3;
@@ -29,7 +27,7 @@ public class MainTest {
     protected Thread theMainThread;
     protected String operationSqsName;
     protected String resultsSqsName;
-    protected String outputBucket;
+    protected String resultsBucket;
     protected String inputKey;
     protected String operationResultKey;
 
@@ -43,21 +41,17 @@ public class MainTest {
         s3 = S3Client.builder().build();
         operationSqsName = "rotemb271TestOperationsSqs" + new Date().getTime();
         resultsSqsName = "rotemb271TestresultsSqs" + new Date().getTime();
-        outputBucket = "rotemb271-test-results" + new Date().getTime();
+        resultsBucket = "rotemb271-test-results" + new Date().getTime();
     }
 
     @After
     public void tearDown() throws Exception {
         if (theMainThread != null)
             theMainThread.interrupt();
-        tearDownSqs(tasksSqsName);
-        tearDownSqs(operationSqsName);
-        tearDownBucket(outputBucket, operationResultKey);
-        tearDownBucket(s3TasksBucket, inputKey);
         tearDownWorker();
     }
 
-    private void tearDownBucket(String bucket,String key) {
+    protected void tearDownBucket(String bucket,String key) {
         s3.deleteObject(
                 DeleteObjectRequest.builder()
                         .bucket(bucket)
@@ -97,7 +91,7 @@ public class MainTest {
         }
     }
 
-    private void tearDownSqs(String sqsName) {
+    protected void tearDownSqs(String sqsName) {
         String queueUrl = sqs.getQueueUrl(
                 GetQueueUrlRequest.builder()
                         .queueName(sqsName)
@@ -133,27 +127,27 @@ public class MainTest {
         return false;
     }
 
-    @Test
-    public void testOneFileInSQSCheckOneWorkerHasBeenCreated() {
-        sqs.sendMessage(
-                SendMessageRequest.builder()
-                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(tasksSqsName).build()).queueUrl())
-                        .messageBody("ToImage\thttp://www.jewishfederations.org/local_includes/downloads/39497.pdf")
-                        .build()
-        );
-        theMainThread = new Thread(() -> {
-            try {
-                Main.main(new String[]{
-                        "-t", tasksSqsName
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        theMainThread.start();
-        Utils.waitDispatchWorker();
-        assertTrue(aNewWorkerExist());
-    }
+//    @Test
+//    public void testOneFileInSQSCheckOneWorkerHasBeenCreated() {
+//        sqs.sendMessage(
+//                SendMessageRequest.builder()
+//                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(tasksSqsName).build()).queueUrl())
+//                        .messageBody("ToImage\thttp://www.jewishfederations.org/local_includes/downloads/39497.pdf")
+//                        .build()
+//        );
+//        theMainThread = new Thread(() -> {
+//            try {
+//                Main.main(new String[]{
+//                        "-t", tasksSqsName
+//                });
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        theMainThread.start();
+//        Utils.waitDispatchWorker();
+//        assertTrue(aNewWorkerExist());
+//    }
 
     private boolean equivalentCommands(String body, String[] expected) {
         Options operationParsingOptions = new Options();
