@@ -20,18 +20,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.junit.Assert.assertTrue;
 
 public class MainTest {
-    private SqsClient sqs;
-    private Ec2Client ec2;
-    private S3Client s3;
-    private String tasksSqsName;
-    private String s3TasksBucket;
-    private Instant testStartTime;
-    private Thread theMainThread;
-    private String operationSqsName;
-    private String resultsSqsName;
-    private String outputBucket;
-    private String inputKey;
-    private String operationResultKey;
+    protected SqsClient sqs;
+    protected Ec2Client ec2;
+    protected S3Client s3;
+    protected String tasksSqsName;
+    protected String s3TasksBucket;
+    protected Instant testStartTime;
+    protected Thread theMainThread;
+    protected String operationSqsName;
+    protected String resultsSqsName;
+    protected String outputBucket;
+    protected String inputKey;
+    protected String operationResultKey;
 
     @Before
     public void setUp() throws Exception {
@@ -186,7 +186,7 @@ public class MainTest {
         }
     }
 
-    private boolean sqsContainsOperation(String pushNotoficationsSqs, String[] command) {
+    protected boolean sqsContainsOperation(String pushNotoficationsSqs, String[] command) {
         GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
                 .queueName(pushNotoficationsSqs)
                 .build();
@@ -199,68 +199,5 @@ public class MainTest {
                 return true;
         }
         return false;
-    }
-
-    @Test
-    public void testOneFileTheWorkerGetsValidOperation() throws IOException {
-        sqs.createQueue(
-                CreateQueueRequest.builder()
-                        .queueName(tasksSqsName)
-                        .build()
-        );
-        sqs.createQueue(
-                CreateQueueRequest.builder()
-                        .queueName(operationSqsName)
-                        .build()
-        );
-        sqs.sendMessage(
-                SendMessageRequest.builder()
-                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(tasksSqsName).build()).queueUrl())
-                        .messageBody("ToImage\thttp://www.jewishfederations.org/local_includes/downloads/39497.pdf")
-                        .build()
-        );
-//        Manager outManager = new Manager(tasksSqsName,Main.WORKER_AMI,Main.WORKER_TAG,Main.generateInfoLogger(),Main.generateSeverLogger());
-        s3.createBucket(CreateBucketRequest.builder().bucket(s3TasksBucket).build());
-        s3.createBucket(CreateBucketRequest.builder().bucket(outputBucket).build());
-        OperationsProduction op = new OperationsProduction(
-                operationSqsName,
-                resultsSqsName,
-                outputBucket,
-                0,
-                null,
-                Region.US_EAST_1,
-                Main.generateInfoLogger(),
-                Main.generateSeverLogger()
-        );
-        inputKey = "rotemb271TestInputKey" + new Date().getTime();
-        Task.NewTask newT = new Task.NewTask(
-                s3TasksBucket,
-                inputKey,
-                null,
-                Message.builder().body("TEST").build()
-        );
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(newT.getBucket())
-                .key(newT.getKeyInput())
-                .acl("public-read")
-                .build();
-        s3.putObject(
-                putObjectRequest,
-                Paths.get(System.getProperty("user.dir"), "test_files", "test_input_nw_one_operation.txt")
-        );
-        op.handleNewTask(newT);
-        Utils.waitDispatchWorker();
-        operationResultKey = "http://www.jewishfederations.org/local_includes/downloads/39497.pdf";
-        assertTrue(
-                sqsContainsOperation(
-                        operationSqsName,
-                        new String[]{" ",
-                                "-a", "ToImage",
-                                "-i", operationResultKey,
-                                "-b", outputBucket,
-                                "-k", operationResultKey,
-                                "-t", "TRYING_TO_AVOID"
-                        })
-        );
     }
 }

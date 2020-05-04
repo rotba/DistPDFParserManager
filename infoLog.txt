@@ -1,2 +1,4 @@
-May 04, 2020 2:38:11 PM logging.Logger log
+May 04, 2020 3:00:12 PM logging.Logger log
 INFO: Handling TEST
+May 04, 2020 3:00:29 PM logging.Logger log
+INFO: Start
