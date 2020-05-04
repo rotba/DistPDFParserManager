@@ -5,11 +5,9 @@ import org.junit.Test;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
+import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -32,6 +30,8 @@ public class MainTest {
     private String operationSqsName;
     private String resultsSqsName;
     private String outputBucket;
+    private String inputKey;
+    private String operationResultKey;
 
     @Before
     public void setUp() throws Exception {
@@ -40,28 +40,35 @@ public class MainTest {
         sqs = SqsClient.builder().region(Region.US_EAST_1).build();
         ec2 = Ec2Client.builder().build();
         s3TasksBucket = "rotemb271-test-task-bucket" + new Date().getTime();
-        s3 = S3Client.create();
+        s3 = S3Client.builder().build();
         operationSqsName = "rotemb271TestOperationsSqs" + new Date().getTime();
         resultsSqsName = "rotemb271TestresultsSqs" + new Date().getTime();
-        outputBucket = "rotemb271-test-results"+new Date().getTime();
+        outputBucket = "rotemb271-test-results" + new Date().getTime();
     }
 
     @After
     public void tearDown() throws Exception {
-        if(theMainThread!=null)
+        if (theMainThread != null)
             theMainThread.interrupt();
         tearDownSqs(tasksSqsName);
         tearDownSqs(operationSqsName);
-        tearDownBucket(outputBucket);
-        tearDownBucket(s3TasksBucket);
+        tearDownBucket(outputBucket, operationResultKey);
+        tearDownBucket(s3TasksBucket, inputKey);
         tearDownWorker();
     }
 
-    private void tearDownBucket(String bucket) {
-        DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder()
-                .bucket(bucket)
-                .build();
-        s3.deleteBucket(deleteBucketRequest);
+    private void tearDownBucket(String bucket,String key) {
+        s3.deleteObject(
+                DeleteObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .build()
+        );
+        s3.deleteBucket(
+                DeleteBucketRequest.builder()
+                        .bucket(bucket)
+                        .build()
+        );
     }
 
     private void tearDownWorker() {
@@ -190,8 +197,8 @@ public class MainTest {
         ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .build();
-        for (Message m:sqs.receiveMessage(receiveRequest).messages()) {
-            if(equivalentCommands(m.body(), command))
+        for (Message m : sqs.receiveMessage(receiveRequest).messages()) {
+            if (equivalentCommands(m.body(), command))
                 return true;
         }
         return false;
@@ -227,7 +234,7 @@ public class MainTest {
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()
         );
-        String inputKey = "rotemb271TestInputKey" + new Date().getTime();
+        inputKey = "rotemb271TestInputKey" + new Date().getTime();
         Task.NewTask newT = new Task.NewTask(
                 s3TasksBucket,
                 inputKey,
@@ -242,17 +249,18 @@ public class MainTest {
         op.handleNewTask(newT);
         s3.putObject(
                 putObjectRequest,
-                Paths.get(System.getProperty("user.dir"),"test_files", "test_input_nw_one_operation.txt")
+                Paths.get(System.getProperty("user.dir"), "test_files", "test_input_nw_one_operation.txt")
         );
         Utils.waitDispatchWorker();
+        operationResultKey = "http://www.jewishfederations.org/local_includes/downloads/39497.pdf";
         assertTrue(
                 sqsContainsOperation(
                         operationSqsName,
                         new String[]{" ",
                                 "-a", "ToImage",
-                                "-i", "http://www.jewishfederations.org/local_includes/downloads/39497.pdf",
+                                "-i", operationResultKey,
                                 "-b", outputBucket,
-                                "-k", "http://www.jewishfederations.org/local_includes/downloads/39497.pdf",
+                                "-k", operationResultKey,
                                 "-t", "TRYING_TO_AVOID"
                         })
         );
