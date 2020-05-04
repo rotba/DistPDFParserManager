@@ -8,7 +8,7 @@ public abstract class Task {
         this.message = m;
     }
 
-    public static Task fromMessage(Message m) throws ParseException {
+    public static Task fromMessage(Message m) throws ParseException, NotImplementedException {
         Options options = new Options();
         Option tasksSqs = new Option("t", "task", true, "the task");
         tasksSqs.setRequired(true);
@@ -16,9 +16,12 @@ public abstract class Task {
         Option bucket = new Option("b", "bucket", true, "the bucket of the input file");
         bucket.setRequired(true);
         options.addOption(bucket);
-        Option key = new Option("k", "key", true, "the key of the input file");
-        key.setRequired(true);
-        options.addOption(key);
+        Option keyInput= new Option("ki", "keyInput", true, "the key of the input file");
+        keyInput.setRequired(true);
+        options.addOption(keyInput);
+        Option keyOutput= new Option("ko", "keyOutput", true, "the key of the output file");
+        keyOutput.setRequired(true);
+        options.addOption(keyOutput);
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
         try {
@@ -29,9 +32,12 @@ public abstract class Task {
         if(cmd.getOptionValue("t").equals("new task")){
             return new NewTask(
                     cmd.getOptionValue("b"),
-                    cmd.getOptionValue("k"),
+                    cmd.getOptionValue("ki"),
+                    cmd.getOptionValue("ko"),
                     m
             );
+        }else{
+            throw new NotImplementedException();
         }
     }
 
@@ -48,20 +54,26 @@ public abstract class Task {
     public  static class NewTask extends Task {
         private final String bucket;
 
-        private final String key;
+        private final String keyInput;
+        private final String keyOutput;
 
-        public NewTask(String bucket, String key, Message m) {
+        public String getKeyOutput() {
+            return keyOutput;
+        }
+
+        public NewTask(String bucket, String keyInput, String keyOutput, Message m) {
             super(m);
             this.bucket = bucket;
-            this.key = key;
+            this.keyInput = keyInput;
+            this.keyOutput = keyOutput;
         }
 
         public String getBucket() {
             return bucket;
         }
 
-        public String getKey() {
-            return key;
+        public String getKeyInput() {
+            return keyInput;
         }
 
         @Override
@@ -70,5 +82,8 @@ public abstract class Task {
         }
 
 
+    }
+
+    public static class NotImplementedException extends Throwable {
     }
 }

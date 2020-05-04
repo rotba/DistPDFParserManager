@@ -18,6 +18,7 @@ public class Manager {
     private String tasksSqsName;
     private String tasksQueueUrl;
     private String operationsResultsSqsName;
+    private String operationsResultsBucket;
     private String workerAmi;
     private String workerTag;
     private final InfoLogger infoLogger;
@@ -47,8 +48,11 @@ public class Manager {
         workingInstances = 0;
         operationsSqsName = "rotemb271Operations"+new Date().getTime();
         operationsResultsSqsName = "rotemb271OperationResults"+new Date().getTime();
+        operationsResultsBucket = "rotemb271-operations-results-bucket"+new Date().getTime();
         operationsProducer = new Thread(new OperationsProduction(
+                operationsSqsName,
                 operationsResultsSqsName,
+                operationsResultsBucket,
                 numberOfPendingTasks,
                 newTasks,
                 infoLogger,
@@ -100,7 +104,7 @@ public class Manager {
 //    }
 
 
-    private Task getNextTask() throws ParseException {
+    private Task getNextTask() throws ParseException, Task.NotImplementedException {
         infoLogger.log("Waiting for next task");
         Message m = null;
         while (m == null) {
@@ -136,7 +140,7 @@ public class Manager {
                 infoLogger.log(String.format("Handling %s", task.toString()));
                 task.visit(this);
                 delete(task);
-            } catch (ParseException e) {
+            } catch (ParseException | Task.NotImplementedException e) {
                 severLogger.log("Parsing problem, probably failed parsing the message", e);
             }
         }
