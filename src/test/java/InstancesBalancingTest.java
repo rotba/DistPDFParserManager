@@ -42,7 +42,7 @@ public class InstancesBalancingTest extends MainTest {
     }
 
     @Test
-    public void testOneFileTheWorkerGetsValidOperation() throws IOException, InterruptedException {
+    public void testBalancingCorrectly() throws IOException, InterruptedException {
         theOutThread = new Thread(out);
         pendingTasks.set(InstancesBalancing.LOAD_FACTOR * 2);
         theOutThread.start();

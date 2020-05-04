@@ -1,8 +1,12 @@
-May 04, 2020 6:56:58 PM logging.Logger log
+May 04, 2020 6:59:43 PM logging.Logger log
 INFO: Terminating 100 instances
-May 04, 2020 6:57:05 PM logging.Logger log
+May 04, 2020 7:00:04 PM logging.Logger log
 INFO: Creating 1 instances
-May 04, 2020 6:57:09 PM logging.Logger log
+May 04, 2020 7:00:21 PM logging.Logger log
 INFO: Creating 1 instances
-May 04, 2020 6:57:15 PM logging.Logger log
+May 04, 2020 7:00:40 PM logging.Logger log
 INFO: Terminating 1 instances
+May 04, 2020 7:01:13 PM logging.Logger log
+INFO: Handling TEST
+May 04, 2020 7:01:51 PM logging.Logger log
+INFO: Start consuming results
