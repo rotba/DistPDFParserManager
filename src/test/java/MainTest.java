@@ -163,26 +163,23 @@ public class MainTest {
         Option input = new Option("i", "input", true, "input file");
         input.setRequired(true);
         operationParsingOptions.addOption(input);
-        Option status = new Option("s", "status", true, "status");
-        status.setRequired(true);
-        operationParsingOptions.addOption(status);
-        Option url = new Option("u", "url", true, "result url");
-        url.setRequired(true);
-        operationParsingOptions.addOption(url);
+        Option bucket = new Option("b", "bucket", true, "bucket");
+        bucket.setRequired(true);
+        operationParsingOptions.addOption(bucket);
+        Option key = new Option("k", "key", true, "key");
+        key.setRequired(true);
+        operationParsingOptions.addOption(key);
         Option timestamp = new Option("t", "timestamp", true, "timestamp");
         timestamp.setRequired(true);
         operationParsingOptions.addOption(timestamp);
-        Option description = new Option("d", "description", true, "description");
-        description.setRequired(true);
-        operationParsingOptions.addOption(description);
         CommandLineParser operationParser = new DefaultParser();
         try {
             CommandLine expectedCmd = operationParser.parse(operationParsingOptions, expected);
             CommandLine operationResultCmd = operationParser.parse(operationParsingOptions, body.split("\\s+"));
             return expectedCmd.getOptionValue("a").equals(operationResultCmd.getOptionValue("a")) &&
                     expectedCmd.getOptionValue("i").equals(operationResultCmd.getOptionValue("i")) &&
-                    expectedCmd.getOptionValue("s").equals(operationResultCmd.getOptionValue("s")) &&
-                    expectedCmd.getOptionValue("u").equals(operationResultCmd.getOptionValue("u"));
+                    expectedCmd.getOptionValue("b").equals(operationResultCmd.getOptionValue("b")) &&
+                    expectedCmd.getOptionValue("k").equals(operationResultCmd.getOptionValue("k"));
         } catch (ParseException e) {
             e.printStackTrace();
             return false;
@@ -231,6 +228,7 @@ public class MainTest {
                 outputBucket,
                 0,
                 null,
+                Region.US_EAST_1,
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()
         );
@@ -246,11 +244,11 @@ public class MainTest {
                 .key(newT.getKeyInput())
                 .acl("public-read")
                 .build();
-        op.handleNewTask(newT);
         s3.putObject(
                 putObjectRequest,
                 Paths.get(System.getProperty("user.dir"), "test_files", "test_input_nw_one_operation.txt")
         );
+        op.handleNewTask(newT);
         Utils.waitDispatchWorker();
         operationResultKey = "http://www.jewishfederations.org/local_includes/downloads/39497.pdf";
         assertTrue(

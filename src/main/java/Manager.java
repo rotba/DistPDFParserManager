@@ -55,6 +55,7 @@ public class Manager {
                 operationsResultsBucket,
                 numberOfPendingTasks,
                 newTasks,
+                Region.US_EAST_1,
                 infoLogger,
                 severLogger
         ));
