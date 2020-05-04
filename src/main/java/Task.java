@@ -29,13 +29,15 @@ public abstract class Task {
         } catch (ParseException e) {
             throw e;
         }
-        if(cmd.getOptionValue("t").equals("new task")){
+        if(cmd.getOptionValue("t").equals("new_task")) {
             return new NewTask(
                     cmd.getOptionValue("b"),
                     cmd.getOptionValue("ki"),
                     cmd.getOptionValue("ko"),
                     m
             );
+        }else if(cmd.getOptionValue("t").equals("terminate")){
+              return new Terminate(m);
         }else{
             throw new NotImplementedException();
         }
@@ -85,5 +87,16 @@ public abstract class Task {
     }
 
     public static class NotImplementedException extends Throwable {
+    }
+
+    public static class Terminate extends Task {
+        public Terminate(Message m) {
+            super(m);
+        }
+
+        @Override
+        public void visit(Manager manager) {
+            manager.accept(this);
+        }
     }
 }

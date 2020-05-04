@@ -39,18 +39,18 @@ public class OperationProductionTest extends MainTest{
         );
 //        Manager outManager = new Manager(tasksSqsName,Main.WORKER_AMI,Main.WORKER_TAG,Main.generateInfoLogger(),Main.generateSeverLogger());
         s3.createBucket(CreateBucketRequest.builder().bucket(s3TasksBucket).build());
-        s3.createBucket(CreateBucketRequest.builder().bucket(resultsBucket).build());
-        inputKey = "rotemb271TestInputKey" + new Date().getTime();
+        s3.createBucket(CreateBucketRequest.builder().bucket(operationsResultsAndTasksResultsBucket).build());
+        taskInputKey = "rotemb271TestInputKey" + new Date().getTime();
         newT = new Task.NewTask(
                 s3TasksBucket,
-                inputKey,
+                taskInputKey,
                 null,
                 Message.builder().body("TEST").build()
         );
         out = new OperationsProduction(
                 operationSqsName,
                 resultsSqsName,
-                resultsBucket,
+                operationsResultsAndTasksResultsBucket,
                 new AtomicInteger(),
                 null,
                 Region.US_EAST_1,
@@ -73,8 +73,8 @@ public class OperationProductionTest extends MainTest{
         super.tearDown();
         tearDownSqs(tasksSqsName);
         tearDownSqs(operationSqsName);
-        tearDownBucket(resultsBucket, operationResultKey);
-        tearDownBucket(s3TasksBucket, inputKey);
+        tearDownBucket(operationsResultsAndTasksResultsBucket, operationResultKey);
+        tearDownBucket(s3TasksBucket, taskInputKey);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class OperationProductionTest extends MainTest{
                         new String[]{" ",
                                 "-a", "ToImage",
                                 "-i", operationResultKey,
-                                "-b", resultsBucket,
+                                "-b", operationsResultsAndTasksResultsBucket,
                                 "-k", operationResultKey,
                                 "-t", "TRYING_TO_AVOID"
                         })

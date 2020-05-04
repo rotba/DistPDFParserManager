@@ -22,9 +22,9 @@ public class Main {
         infoLogger = generateInfoLogger();
         infoLogger.log("Start");
         Options options = new Options();
-        Option tasksSqs = new Option("t", "tasks", true, "tasks sqs");
-        tasksSqs.setRequired(true);
-        options.addOption(tasksSqs);
+        Option inputTasksSqs = new Option("i", "tasks", true, "input tasks sqs");
+        inputTasksSqs.setRequired(true);
+        options.addOption(inputTasksSqs);
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
         try {
@@ -35,7 +35,7 @@ public class Main {
             System.exit(1);
         }
         new Manager(
-                cmd.getOptionValue("t"),
+                cmd.getOptionValue("i"),
                 WORKER_AMI,
                 WORKER_TAG,
                 infoLogger,

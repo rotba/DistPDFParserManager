@@ -1,7 +1,6 @@
 import org.apache.commons.cli.*;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
@@ -11,7 +10,6 @@ import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 
@@ -27,9 +25,9 @@ public abstract class MainTest {
     protected Thread theMainThread;
     protected String operationSqsName;
     protected String resultsSqsName;
-    protected String resultsBucket;
-    protected String inputKey;
+    protected String taskInputKey;
     protected String operationResultKey;
+    protected String operationsResultsAndTasksResultsBucket;
 
     @Before
     public void setUp() throws Exception {
@@ -41,7 +39,8 @@ public abstract class MainTest {
         s3 = S3Client.builder().build();
         operationSqsName = "rotemb271TestOperationsSqs" + new Date().getTime();
         resultsSqsName = "rotemb271TestresultsSqs" + new Date().getTime();
-        resultsBucket = "rotemb271-test-results" + new Date().getTime();
+        operationsResultsAndTasksResultsBucket = "rotemb271-test-results" + new Date().getTime();
+        taskInputKey = "rotemb271TestTaskInputKey"+new Date().getTime();
     }
 
     @After

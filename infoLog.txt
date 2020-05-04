@@ -1,12 +1,16 @@
-May 04, 2020 6:59:43 PM logging.Logger log
+May 04, 2020 9:58:18 PM logging.Logger log
+INFO: Start
+May 04, 2020 9:58:22 PM logging.Logger log
+INFO: serving
+May 04, 2020 9:58:22 PM logging.Logger log
+INFO: Waiting for next task
+May 04, 2020 9:58:22 PM logging.Logger log
 INFO: Terminating 100 instances
-May 04, 2020 7:00:04 PM logging.Logger log
-INFO: Creating 1 instances
-May 04, 2020 7:00:21 PM logging.Logger log
-INFO: Creating 1 instances
-May 04, 2020 7:00:40 PM logging.Logger log
-INFO: Terminating 1 instances
-May 04, 2020 7:01:13 PM logging.Logger log
-INFO: Handling TEST
-May 04, 2020 7:01:51 PM logging.Logger log
-INFO: Start consuming results
+May 04, 2020 9:58:23 PM logging.Logger log
+INFO: Got message: -t new_task -b rotemb271-test-results1588618692481 -ki rotemb271TestTaskInputKey1588618692481 -ko rotemb271TestFinalOutputKey1588618698024
+May 04, 2020 9:58:23 PM logging.Logger log
+INFO: Handling Task$NewTask@3e1a0434
+May 04, 2020 9:58:23 PM logging.Logger log
+INFO: Handling -t new_task -b rotemb271-test-results1588618692481 -ki rotemb271TestTaskInputKey1588618692481 -ko rotemb271TestFinalOutputKey1588618698024
+May 04, 2020 9:58:23 PM logging.Logger log
+INFO: Waiting for next task

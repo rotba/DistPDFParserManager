@@ -2,6 +2,8 @@ import logging.InfoLogger;
 import logging.SeverLogger;
 import org.apache.commons.cli.ParseException;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -21,6 +23,7 @@ public class Manager {
     private final InfoLogger infoLogger;
     private final SeverLogger severLogger;
     private SqsClient sqs;
+    private S3Client s3;
     private ConcurrentLinkedQueue<Task.NewTask> newTasks;
     private Integer workingInstances;
     private AtomicInteger numberOfPendingTasks;
@@ -35,17 +38,33 @@ public class Manager {
         this.infoLogger = infoLogger;
         this.severLogger = severLogger;
         sqs = SqsClient.builder().region(Region.US_EAST_1).build();
+        s3 = S3Client.create();
         tasksQueueUrl = sqs.getQueueUrl(
                 GetQueueUrlRequest.builder()
-                        .queueName(this.tasksSqsName)
+                        .queueName(tasksSqsName)
                         .build()
-        ).toString();
+        ).queueUrl();
         newTasks = new ConcurrentLinkedQueue();
-        numberOfPendingTasks.set(0);
+        numberOfPendingTasks = new AtomicInteger(0);
         workingInstances = 0;
-        operationsSqsName = "rotemb271Operations"+new Date().getTime();
-        operationsResultsSqsName = "rotemb271OperationResults"+new Date().getTime();
-        operationsResultsBucket = "rotemb271-operations-results-bucket"+new Date().getTime();
+        operationsSqsName = "rotemb271Operations" + new Date().getTime();
+        operationsResultsSqsName = "rotemb271OperationResults" + new Date().getTime();
+        operationsResultsBucket = "rotemb271-operations-results-bucket" + new Date().getTime();
+        sqs.createQueue(
+                CreateQueueRequest.builder()
+                        .queueName(operationsSqsName)
+                        .build()
+        );
+        sqs.createQueue(
+                CreateQueueRequest.builder()
+                        .queueName(operationsResultsSqsName)
+                        .build()
+        );
+//        s3.createBucket(
+//                CreateBucketRequest.builder()
+//                        .bucket(operationsResultsBucket)
+//                        .build()
+//        );
         operationsProducer = new Thread(new OperationsProduction(
                 operationsSqsName,
                 operationsResultsSqsName,
@@ -64,6 +83,11 @@ public class Manager {
                 workerAmi,
                 infoLogger,
                 severLogger
+        ));
+        operationsResultsConsumer = new Thread(new ResultsConsumption(
+                operationsResultsSqsName,
+                operationsResultsBucket,
+
         ));
         operationsProducer.start();
         instancesBalancer.start();
@@ -102,7 +126,7 @@ public class Manager {
 //    }
 
 
-    private Task getNextTask() throws ParseException, Task.NotImplementedException {
+    private Task getNextTask() throws ParseException, Task.NotImplementedException, InterruptedException {
         infoLogger.log("Waiting for next task");
         Message m = null;
         while (m == null) {
@@ -129,6 +153,35 @@ public class Manager {
         newTasks.add(newTask);
     }
 
+    public void accept(Task.Terminate terminate) {
+        terminate();
+    }
+
+    private void terminate() {
+        sqs.deleteQueue(
+                DeleteQueueRequest.builder()
+                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsSqsName).build()).queueUrl())
+                        .build()
+        );
+        sqs.deleteQueue(
+                DeleteQueueRequest.builder()
+                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())
+                        .build()
+        );
+//        for (S3Object s3Object:
+//                s3.listObjects(
+//                        ListObjectsRequest.builder()
+//                                .bucket(operationsResultsBucket)
+//                                .build()
+//                ).contents()
+//        ) {
+//            s3.deleteObject(
+//                    DeleteObjectRequest.builder().bucket(operationsResultsBucket).key(s3Object.key()).build()
+//            );
+//        }
+//        s3.deleteBucket(DeleteBucketRequest.builder().bucket(operationsResultsBucket).build());
+    }
+
     public void serve() {
         infoLogger.log("serving");
 
@@ -140,6 +193,8 @@ public class Manager {
                 delete(task);
             } catch (ParseException | Task.NotImplementedException e) {
                 severLogger.log("Parsing problem, probably failed parsing the message", e);
+            }catch (InterruptedException e){
+                terminate();
             }
         }
     }

@@ -37,7 +37,7 @@ public class ResultsConsumptionTest extends MainTest {
         );
         finalOutputBucket = "rotemb271-test-final-output" + new Date().getTime();
         finalOutputKey = "rotemb271FinalOutputKey" + new Date().getTime();
-        s3.createBucket(CreateBucketRequest.builder().bucket(resultsBucket).build());
+        s3.createBucket(CreateBucketRequest.builder().bucket(operationsResultsAndTasksResultsBucket).build());
         s3.createBucket(CreateBucketRequest.builder().bucket(finalOutputBucket).build());
         sqs.createQueue(
                 CreateQueueRequest.builder()
@@ -47,7 +47,7 @@ public class ResultsConsumptionTest extends MainTest {
         resultsSqsUrl = sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(resultsSqsName).build()).queueUrl();
         out = new ResultsConsumption(
                 resultsSqsName,
-                resultsBucket,
+                operationsResultsAndTasksResultsBucket,
                 finalOutputBucket,
                 finalOutputKey,
                 Region.US_EAST_1,
@@ -61,40 +61,8 @@ public class ResultsConsumptionTest extends MainTest {
         super.tearDown();
         theOutThread.interrupt();
         tearDownSqs(resultsSqsName);
-        tearDownBucket(resultsBucket, finalOutputKey);
+        tearDownBucket(operationsResultsAndTasksResultsBucket, finalOutputKey);
         tearDownBucket(finalOutputBucket, finalOutputKey);
-    }
-
-    private File download(String outputBucket, String outputKey) {
-        Runtime rt = Runtime.getRuntime();
-        try {
-            String address = String.format("https://%s.s3.amazonaws.com/%s", outputBucket, outputKey);
-            Path pathPrefix = Paths.get(System.getProperty("user.dir"), "test_files", "output");
-            Process pr = rt.exec(String.format("wget %s -P %s", address, pathPrefix));
-            pr.waitFor();
-            return new File(Paths.get(pathPrefix.toString(), outputKey).toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        fail();
-        return null;
-    }
-
-    private boolean htmlContains(File download, String s) {
-        try {
-            Document doc = Jsoup.parse(
-                    download,
-                    "utf-8"
-            );
-            String text = doc.body().text();
-            return text.contains(s);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 
     @Test
@@ -119,8 +87,8 @@ public class ResultsConsumptionTest extends MainTest {
         Utils.waitDispatchWorker();
         out.sealConsumption();
         assertTrue(
-                htmlContains(
-                        download(finalOutputBucket, finalOutputKey),
+                Utils.htmlContains(
+                        Utils.download(finalOutputBucket, finalOutputKey),
                         "ToImage http://www.jewishfederations.org/local_includes/downloads/39497.pdf https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png")
         );
     }
