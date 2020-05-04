@@ -116,8 +116,8 @@ public class ResultsConsumptionTest extends MainTest {
         );
         theOutThread = new Thread(out);
         theOutThread.start();
-        out.sealConsumption();
         Utils.waitDispatchWorker();
+        out.sealConsumption();
         assertTrue(
                 htmlContains(
                         download(finalOutputBucket, finalOutputKey),
