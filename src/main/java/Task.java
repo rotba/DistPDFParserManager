@@ -13,9 +13,9 @@ public abstract class Task {
         Option tasksSqs = new Option("t", "task", true, "the task");
         tasksSqs.setRequired(true);
         options.addOption(tasksSqs);
-        Option bucket = new Option("b", "bucket", true, "the bucket of the input file");
-        bucket.setRequired(true);
-        options.addOption(bucket);
+        Option tasksBucket = new Option("b", "bucket", true, "the bucket of the input file");
+        tasksBucket.setRequired(true);
+        options.addOption(tasksBucket);
         Option keyInput= new Option("ki", "keyInput", true, "the key of the input file");
         keyInput.setRequired(true);
         options.addOption(keyInput);
@@ -55,7 +55,6 @@ public abstract class Task {
 
     public  static class NewTask extends Task {
         private final String bucket;
-
         private final String keyInput;
         private final String keyOutput;
 

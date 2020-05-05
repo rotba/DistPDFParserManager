@@ -38,19 +38,19 @@ public class OperationProductionTest extends MainTest{
                         .build()
         );
 //        Manager outManager = new Manager(tasksSqsName,Main.WORKER_AMI,Main.WORKER_TAG,Main.generateInfoLogger(),Main.generateSeverLogger());
-        s3.createBucket(CreateBucketRequest.builder().bucket(s3TasksBucket).build());
-        s3.createBucket(CreateBucketRequest.builder().bucket(operationsResultsAndTasksResultsBucket).build());
+        s3.createBucket(CreateBucketRequest.builder().bucket(tasksBucket).build());
+        s3.createBucket(CreateBucketRequest.builder().bucket(operationsBucket).build());
         taskInputKey = "rotemb271TestInputKey" + new Date().getTime();
         newT = new Task.NewTask(
-                s3TasksBucket,
+                tasksBucket,
                 taskInputKey,
-                null,
+                finalOutputKey,
                 Message.builder().body("TEST").build()
         );
         out = new OperationsProduction(
                 operationSqsName,
                 resultsSqsName,
-                operationsResultsAndTasksResultsBucket,
+                operationsBucket,
                 new AtomicInteger(),
                 null,
                 Region.US_EAST_1,
@@ -73,8 +73,8 @@ public class OperationProductionTest extends MainTest{
         super.tearDown();
         tearDownSqs(tasksSqsName);
         tearDownSqs(operationSqsName);
-        tearDownBucket(operationsResultsAndTasksResultsBucket, operationResultKey);
-        tearDownBucket(s3TasksBucket, taskInputKey);
+        tearDownBucket(operationsBucket, operationResultKey);
+        tearDownBucket(tasksBucket, taskInputKey);
     }
 
     @Test
@@ -88,9 +88,11 @@ public class OperationProductionTest extends MainTest{
                         new String[]{" ",
                                 "-a", "ToImage",
                                 "-i", operationResultKey,
-                                "-b", operationsResultsAndTasksResultsBucket,
+                                "-b", operationsBucket,
                                 "-k", operationResultKey,
-                                "-t", "TRYING_TO_AVOID"
+                                "-t", "TRYING_TO_AVOID",
+                                "-fb", tasksBucket,
+                                "-fk", finalOutputKey
                         })
         );
     }

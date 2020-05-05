@@ -20,14 +20,15 @@ public abstract class MainTest {
     protected Ec2Client ec2;
     protected S3Client s3;
     protected String tasksSqsName;
-    protected String s3TasksBucket;
+    protected String tasksBucket;
     protected Instant testStartTime;
     protected Thread theMainThread;
     protected String operationSqsName;
     protected String resultsSqsName;
     protected String taskInputKey;
     protected String operationResultKey;
-    protected String operationsResultsAndTasksResultsBucket;
+    protected String operationsBucket;
+    protected String finalOutputKey;
 
     @Before
     public void setUp() throws Exception {
@@ -35,12 +36,13 @@ public abstract class MainTest {
         tasksSqsName = "rotemb271WorkerMainTest" + new Date().getTime();
         sqs = SqsClient.builder().region(Region.US_EAST_1).build();
         ec2 = Ec2Client.builder().build();
-        s3TasksBucket = "rotemb271-test-task-bucket" + new Date().getTime();
+        tasksBucket = "rotemb271-test-tasks-bucket" + new Date().getTime();
         s3 = S3Client.builder().build();
         operationSqsName = "rotemb271TestOperationsSqs" + new Date().getTime();
         resultsSqsName = "rotemb271TestresultsSqs" + new Date().getTime();
-        operationsResultsAndTasksResultsBucket = "rotemb271-test-results" + new Date().getTime();
+        operationsBucket = "rotemb271-test-operations-bucket" + new Date().getTime();
         taskInputKey = "rotemb271TestTaskInputKey"+new Date().getTime();
+        finalOutputKey = "rotemb271FinalOutputKey" + new Date().getTime();
     }
 
     @After
@@ -165,6 +167,12 @@ public abstract class MainTest {
         Option timestamp = new Option("t", "timestamp", true, "timestamp");
         timestamp.setRequired(true);
         operationParsingOptions.addOption(timestamp);
+        Option finalBucket = new Option("fb", "finalbucket", true, "finalbucket");
+        finalBucket.setRequired(true);
+        operationParsingOptions.addOption(finalBucket);
+        Option finalKey = new Option("fk", "finalkey", true, "finalkey");
+        finalKey.setRequired(true);
+        operationParsingOptions.addOption(finalKey);
         CommandLineParser operationParser = new DefaultParser();
         try {
             CommandLine expectedCmd = operationParser.parse(operationParsingOptions, expected);
@@ -172,7 +180,9 @@ public abstract class MainTest {
             return expectedCmd.getOptionValue("a").equals(operationResultCmd.getOptionValue("a")) &&
                     expectedCmd.getOptionValue("i").equals(operationResultCmd.getOptionValue("i")) &&
                     expectedCmd.getOptionValue("b").equals(operationResultCmd.getOptionValue("b")) &&
-                    expectedCmd.getOptionValue("k").equals(operationResultCmd.getOptionValue("k"));
+                    expectedCmd.getOptionValue("k").equals(operationResultCmd.getOptionValue("k"))&&
+                    expectedCmd.getOptionValue("fb").equals(operationResultCmd.getOptionValue("fb")) &&
+                    expectedCmd.getOptionValue("fk").equals(operationResultCmd.getOptionValue("fk"));
         } catch (ParseException e) {
             e.printStackTrace();
             return false;

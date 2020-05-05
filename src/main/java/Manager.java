@@ -3,7 +3,6 @@ import logging.SeverLogger;
 import org.apache.commons.cli.ParseException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -17,7 +16,7 @@ public class Manager {
     private String tasksSqsName;
     private String tasksQueueUrl;
     private String operationsResultsSqsName;
-    private String operationsResultsBucket;
+    private String operationsBucket;
     private String workerAmi;
     private String workerTag;
     private final InfoLogger infoLogger;
@@ -49,7 +48,7 @@ public class Manager {
         workingInstances = 0;
         operationsSqsName = "rotemb271Operations" + new Date().getTime();
         operationsResultsSqsName = "rotemb271OperationResults" + new Date().getTime();
-        operationsResultsBucket = "rotemb271-operations-results-bucket" + new Date().getTime();
+        operationsBucket = "rotemb271-operations-results-bucket" + new Date().getTime();
         sqs.createQueue(
                 CreateQueueRequest.builder()
                         .queueName(operationsSqsName)
@@ -68,7 +67,7 @@ public class Manager {
         operationsProducer = new Thread(new OperationsProduction(
                 operationsSqsName,
                 operationsResultsSqsName,
-                operationsResultsBucket,
+                operationsBucket,
                 numberOfPendingTasks,
                 newTasks,
                 Region.US_EAST_1,
@@ -86,7 +85,8 @@ public class Manager {
         ));
 //        operationsResultsConsumer = new Thread(new ResultsConsumption(
 //                operationsResultsSqsName,
-//                operationsResultsBucket,
+//                operationsBucket,
+//                tasks
 //
 //        ));
         operationsProducer.start();

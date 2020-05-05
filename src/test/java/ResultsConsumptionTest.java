@@ -1,5 +1,3 @@
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,10 +7,7 @@ import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 
 import static org.junit.Assert.assertTrue;
@@ -22,8 +17,6 @@ public class ResultsConsumptionTest extends MainTest {
 
     private Task.NewTask newT;
     private ResultsConsumption out;
-    private String finalOutputBucket;
-    private String finalOutputKey;
     private String resultsSqsUrl;
     private Thread theOutThread;
 
@@ -35,10 +28,8 @@ public class ResultsConsumptionTest extends MainTest {
                         .queueName(resultsSqsName)
                         .build()
         );
-        finalOutputBucket = "rotemb271-test-final-output" + new Date().getTime();
-        finalOutputKey = "rotemb271FinalOutputKey" + new Date().getTime();
-        s3.createBucket(CreateBucketRequest.builder().bucket(operationsResultsAndTasksResultsBucket).build());
-        s3.createBucket(CreateBucketRequest.builder().bucket(finalOutputBucket).build());
+        s3.createBucket(CreateBucketRequest.builder().bucket(operationsBucket).build());
+        s3.createBucket(CreateBucketRequest.builder().bucket(tasksBucket).build());
         sqs.createQueue(
                 CreateQueueRequest.builder()
                         .queueName(resultsSqsName)
@@ -47,9 +38,7 @@ public class ResultsConsumptionTest extends MainTest {
         resultsSqsUrl = sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(resultsSqsName).build()).queueUrl();
         out = new ResultsConsumption(
                 resultsSqsName,
-                operationsResultsAndTasksResultsBucket,
-                finalOutputBucket,
-                finalOutputKey,
+                operationsBucket,
                 Region.US_EAST_1,
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()
@@ -61,8 +50,8 @@ public class ResultsConsumptionTest extends MainTest {
         super.tearDown();
         theOutThread.interrupt();
         tearDownSqs(resultsSqsName);
-        tearDownBucket(operationsResultsAndTasksResultsBucket, finalOutputKey);
-        tearDownBucket(finalOutputBucket, finalOutputKey);
+        tearDownBucket(operationsBucket, finalOutputKey);
+        tearDownBucket(tasksBucket, finalOutputKey);
     }
 
     @Test
@@ -77,7 +66,9 @@ public class ResultsConsumptionTest extends MainTest {
                                         "-s", "SUCCESS",
                                         "-t", "TRYINGTOAVOID",
                                         "-d", "NOT_TESTING",
-                                        "-u", "https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png"
+                                        "-u", "https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png",
+                                        "-b", tasksBucket,
+                                        "-k", finalOutputKey
                                 )
                         )
                         .build()
@@ -88,7 +79,7 @@ public class ResultsConsumptionTest extends MainTest {
         out.sealConsumption();
         assertTrue(
                 Utils.htmlContains(
-                        Utils.download(finalOutputBucket, finalOutputKey),
+                        Utils.download(tasksBucket, finalOutputKey),
                         "ToImage http://www.jewishfederations.org/local_includes/downloads/39497.pdf https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png")
         );
     }

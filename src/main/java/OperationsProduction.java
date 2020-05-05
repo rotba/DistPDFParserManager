@@ -61,7 +61,7 @@ public class OperationsProduction implements Runnable {
                             pathPrefix)
             );
             pr.waitFor();
-            produceOperations(Paths.get(pathPrefix.toString(), newT.getKeyInput()).toString());
+            produceOperations(Paths.get(pathPrefix.toString(), newT.getKeyInput()).toString(), newT.getBucket(),newT.getKeyOutput());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,25 +72,27 @@ public class OperationsProduction implements Runnable {
         }
     }
 
-    private void produceOperations(String path) throws IOException {
+    private void produceOperations(String path, String outputBucket,String outputKey) throws IOException {
         LineIterator it = FileUtils.lineIterator(new File(path), "UTF-8");
         try {
             while (it.hasNext()) {
-                produceOperation(it.nextLine());
+                produceOperation(it.nextLine(),outputBucket, outputKey);
             }
         } finally {
             it.close();
         }
     }
 
-    private void produceOperation(String nextLine) {
+    private void produceOperation(String nextLine,String outputBucket,String outputKey) {
         String[] arr = nextLine.split("\\s+");
         String body = String.join(" ",
                 "-a", arr[0],
                 "-i", arr[1],
                 "-b", resultsBucket,
                 "-k", arr[1],
-                "-t", Instant.now().toString()
+                "-t", Instant.now().toString(),
+                "-fb", outputBucket,
+                "-fk", outputKey
         );
         sqs.sendMessage(
                 SendMessageRequest.builder()

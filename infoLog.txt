@@ -1,28 +1,28 @@
-May 05, 2020 7:18:49 AM logging.Logger log
+May 05, 2020 8:13:35 AM logging.Logger log
 INFO: Terminating 100 instances
-May 05, 2020 7:18:57 AM logging.Logger log
+May 05, 2020 8:13:39 AM logging.Logger log
 INFO: Creating 1 instances
-May 05, 2020 7:19:00 AM logging.Logger log
+May 05, 2020 8:13:43 AM logging.Logger log
 INFO: Creating 1 instances
-May 05, 2020 7:19:06 AM logging.Logger log
+May 05, 2020 8:13:51 AM logging.Logger log
 INFO: Terminating 1 instances
-May 05, 2020 7:19:20 AM logging.Logger log
+May 05, 2020 8:14:06 AM logging.Logger log
 INFO: Start
-May 05, 2020 7:19:24 AM logging.Logger log
+May 05, 2020 8:14:10 AM logging.Logger log
 INFO: serving
-May 05, 2020 7:19:24 AM logging.Logger log
+May 05, 2020 8:14:10 AM logging.Logger log
 INFO: Terminating 100 instances
-May 05, 2020 7:19:24 AM logging.Logger log
+May 05, 2020 8:14:10 AM logging.Logger log
 INFO: Waiting for next task
-May 05, 2020 7:19:25 AM logging.Logger log
-INFO: Got message: -t new_task -b rotemb271-test-results1588652355328 -ki rotemb271TestTaskInputKey1588652355328 -ko rotemb271TestFinalOutputKey1588652360093
-May 05, 2020 7:19:25 AM logging.Logger log
-INFO: Handling Task$NewTask@6dd73d5d
-May 05, 2020 7:19:25 AM logging.Logger log
-INFO: Handling -t new_task -b rotemb271-test-results1588652355328 -ki rotemb271TestTaskInputKey1588652355328 -ko rotemb271TestFinalOutputKey1588652360093
-May 05, 2020 7:19:25 AM logging.Logger log
+May 05, 2020 8:14:11 AM logging.Logger log
+INFO: Got message: -t new_task -b rotemb271-test-operations-bucket1588655642001 -ki rotemb271TestTaskInputKey1588655642001 -ko rotemb271TestFinalOutputKey1588655646706
+May 05, 2020 8:14:11 AM logging.Logger log
+INFO: Handling Task$NewTask@35efc871
+May 05, 2020 8:14:11 AM logging.Logger log
+INFO: Handling -t new_task -b rotemb271-test-operations-bucket1588655642001 -ki rotemb271TestTaskInputKey1588655642001 -ko rotemb271TestFinalOutputKey1588655646706
+May 05, 2020 8:14:11 AM logging.Logger log
 INFO: Waiting for next task
-May 05, 2020 7:20:05 AM logging.Logger log
+May 05, 2020 8:14:48 AM logging.Logger log
 INFO: Handling TEST
-May 05, 2020 7:20:25 AM logging.Logger log
+May 05, 2020 8:15:12 AM logging.Logger log
 INFO: Start consuming results

@@ -1,5 +1,5 @@
-May 05, 2020 7:19:15 AM logging.Logger log
-SEVERE: [Ljava.lang.StackTraceElement;@7e9b9d15
+May 05, 2020 8:14:01 AM logging.Logger log
+SEVERE: [Ljava.lang.StackTraceElement;@6e1d0a12
 software.amazon.awssdk.core.exception.AbortedException: Thread was interrupted
 	at software.amazon.awssdk.core.exception.AbortedException$BuilderImpl.build(AbortedException.java:83)
 	at software.amazon.awssdk.core.exception.AbortedException.create(AbortedException.java:38)
