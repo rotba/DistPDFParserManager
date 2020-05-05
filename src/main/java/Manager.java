@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Manager {
+    private final ResultsConsumption resultsConsumption;
     private String operationsSqsName;
     private String tasksSqsName;
     private String tasksQueueUrl;
@@ -87,7 +88,7 @@ public class Manager {
                 infoLogger,
                 severLogger
         ));
-        operationsResultsConsumer = new Thread(new ResultsConsumption(
+        resultsConsumption = new ResultsConsumption(
                 operationsResultsSqsName,
                 operationsBucket,
                 numberOfPendingTasks,
@@ -95,7 +96,8 @@ public class Manager {
                 infoLogger,
                 severLogger
 
-        ));
+        );
+        operationsResultsConsumer = new Thread(resultsConsumption);
         operationsProducer.start();
         instancesBalancer.start();
         operationsResultsConsumer.start();
@@ -166,6 +168,8 @@ public class Manager {
     }
 
     private void terminate() {
+        infoLogger.log("terminating");
+        resultsConsumption.sealConsumption();
         sqs.deleteQueue(
                 DeleteQueueRequest.builder()
                         .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsSqsName).build()).queueUrl())
@@ -176,18 +180,6 @@ public class Manager {
                         .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())
                         .build()
         );
-//        for (S3Object s3Object:
-//                s3.listObjects(
-//                        ListObjectsRequest.builder()
-//                                .bucket(operationsResultsBucket)
-//                                .build()
-//                ).contents()
-//        ) {
-//            s3.deleteObject(
-//                    DeleteObjectRequest.builder().bucket(operationsResultsBucket).key(s3Object.key()).build()
-//            );
-//        }
-//        s3.deleteBucket(DeleteBucketRequest.builder().bucket(operationsResultsBucket).build());
     }
 
     public void serve() {

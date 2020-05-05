@@ -96,7 +96,7 @@ public class ResultsConsumption implements Runnable {
                     .bucket(bucketAndKey.left())
                     .key(bucketAndKey.right())
                     .build();
-
+            infoLogger.log(String.format("Strored final results in https://%s.s3.amazonaws.com/%s", bucketAndKey.left(), bucketAndKey.right()));
             Path path = Paths.get(System.getProperty("user.dir"), "new_tasks", "output", bucketAndKey.right());
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()))) {
                 writer.write(doc.toString());
@@ -132,6 +132,9 @@ public class ResultsConsumption implements Runnable {
 
     private void consume(Message m) throws ParseException {
         infoLogger.log("consuming a message");
+        try {
+            infoLogger.log(String.format("The message is %s", m.body()));
+        }catch (Exception e){}
         store(Result.create(m));
         pendingTasks.set(pendingTasks.get()-1);
     }

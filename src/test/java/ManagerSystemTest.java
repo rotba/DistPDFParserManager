@@ -45,7 +45,7 @@ public class ManagerSystemTest extends MainTest {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        tearDownSqs(resultsSqsName);
+        tearDownSqs(tasksSqsName);
         theOutThread.interrupt();
     }
 
@@ -57,6 +57,12 @@ public class ManagerSystemTest extends MainTest {
     public void testManager() throws IOException, InterruptedException {
         String newTask = String.join(" ",
                 "-t", "new_task",
+                "-b", tasksBucket,
+                "-ki", taskInputKey,
+                "-ko", finalOutputKey
+        );
+        String terminate = String.join(" ",
+                "-t", "terminate",
                 "-b", tasksBucket,
                 "-ki", taskInputKey,
                 "-ko", finalOutputKey
@@ -85,6 +91,13 @@ public class ManagerSystemTest extends MainTest {
                         .build()
         );
         Thread.sleep(100*1000);
+        sqs.sendMessage(
+                SendMessageRequest.builder()
+                        .queueUrl(tasksSQSQUrl)
+                        .messageBody(terminate)
+                        .build()
+        );
+        Thread.sleep(20*1000);
         assertTrue(
                 Utils.htmlContains(
                         Utils.download(tasksBucket, finalOutputKey),
