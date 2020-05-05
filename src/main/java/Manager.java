@@ -84,11 +84,11 @@ public class Manager {
                 infoLogger,
                 severLogger
         ));
-        operationsResultsConsumer = new Thread(new ResultsConsumption(
-                operationsResultsSqsName,
-                operationsResultsBucket,
-
-        ));
+//        operationsResultsConsumer = new Thread(new ResultsConsumption(
+//                operationsResultsSqsName,
+//                operationsResultsBucket,
+//
+//        ));
         operationsProducer.start();
         instancesBalancer.start();
     }
