@@ -36,7 +36,7 @@ public class ManagerSystemTest extends MainTest {
         ).queueUrl();
         s3.createBucket(
                 CreateBucketRequest.builder()
-                        .bucket(operationsBucket)
+                        .bucket(tasksBucket)
                         .build()
         );
         finalOutputKey = "rotemb271TestFinalOutputKey"+new Date().getTime();
@@ -57,7 +57,7 @@ public class ManagerSystemTest extends MainTest {
     public void testManager() throws IOException, InterruptedException {
         String newTask = String.join(" ",
                 "-t", "new_task",
-                "-b", operationsBucket,
+                "-b", tasksBucket,
                 "-ki", taskInputKey,
                 "-ko", finalOutputKey
         );
@@ -73,7 +73,7 @@ public class ManagerSystemTest extends MainTest {
         });
         theOutThread.start();
         s3.putObject(
-                PutObjectRequest.builder().acl("public-read").bucket(operationsBucket).key(taskInputKey).build(),
+                PutObjectRequest.builder().acl("public-read").bucket(tasksBucket).key(taskInputKey).build(),
                 Paths.get(System.getProperty("user.dir"), "test_files", "test_input_nw_one_operation.txt")
         );
         sqs.sendMessage(
@@ -82,10 +82,10 @@ public class ManagerSystemTest extends MainTest {
                         .messageBody(newTask)
                         .build()
         );
-        Thread.sleep(30*1000);
+        Thread.sleep(40*1000);
         assertTrue(
                 Utils.htmlContains(
-                        Utils.download(operationsBucket, finalOutputKey),
+                        Utils.download(tasksBucket, finalOutputKey),
                         "ToImage http://www.jewishfederations.org/local_includes/downloads/39497.pdf https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png")
         );
     }

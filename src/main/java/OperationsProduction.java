@@ -100,5 +100,8 @@ public class OperationsProduction implements Runnable {
                         .messageBody(body)
                         .build()
         );
+        synchronized (numOfPendingOperations){
+            numOfPendingOperations.set(numOfPendingOperations.get()+1);
+        }
     }
 }

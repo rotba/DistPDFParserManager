@@ -1,28 +1,20 @@
-May 05, 2020 8:13:35 AM logging.Logger log
-INFO: Terminating 100 instances
-May 05, 2020 8:13:39 AM logging.Logger log
-INFO: Creating 1 instances
-May 05, 2020 8:13:43 AM logging.Logger log
-INFO: Creating 1 instances
-May 05, 2020 8:13:51 AM logging.Logger log
-INFO: Terminating 1 instances
-May 05, 2020 8:14:06 AM logging.Logger log
+May 05, 2020 9:04:26 AM logging.Logger log
 INFO: Start
-May 05, 2020 8:14:10 AM logging.Logger log
+May 05, 2020 9:04:30 AM logging.Logger log
 INFO: serving
-May 05, 2020 8:14:10 AM logging.Logger log
+May 05, 2020 9:04:30 AM logging.Logger log
 INFO: Terminating 100 instances
-May 05, 2020 8:14:10 AM logging.Logger log
-INFO: Waiting for next task
-May 05, 2020 8:14:11 AM logging.Logger log
-INFO: Got message: -t new_task -b rotemb271-test-operations-bucket1588655642001 -ki rotemb271TestTaskInputKey1588655642001 -ko rotemb271TestFinalOutputKey1588655646706
-May 05, 2020 8:14:11 AM logging.Logger log
-INFO: Handling Task$NewTask@35efc871
-May 05, 2020 8:14:11 AM logging.Logger log
-INFO: Handling -t new_task -b rotemb271-test-operations-bucket1588655642001 -ki rotemb271TestTaskInputKey1588655642001 -ko rotemb271TestFinalOutputKey1588655646706
-May 05, 2020 8:14:11 AM logging.Logger log
-INFO: Waiting for next task
-May 05, 2020 8:14:48 AM logging.Logger log
-INFO: Handling TEST
-May 05, 2020 8:15:12 AM logging.Logger log
+May 05, 2020 9:04:30 AM logging.Logger log
 INFO: Start consuming results
+May 05, 2020 9:04:30 AM logging.Logger log
+INFO: Waiting for next task
+May 05, 2020 9:04:30 AM logging.Logger log
+INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588658663825 -ki rotemb271TestTaskInputKey1588658663900 -ko rotemb271TestFinalOutputKey1588658666515
+May 05, 2020 9:04:30 AM logging.Logger log
+INFO: Handling Task$NewTask@68beec82
+May 05, 2020 9:04:30 AM logging.Logger log
+INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588658663825 -ki rotemb271TestTaskInputKey1588658663900 -ko rotemb271TestFinalOutputKey1588658666515
+May 05, 2020 9:04:30 AM logging.Logger log
+INFO: Waiting for next task
+May 05, 2020 9:04:32 AM logging.Logger log
+INFO: Creating 1 instances

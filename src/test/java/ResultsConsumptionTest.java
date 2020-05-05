@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -39,6 +40,7 @@ public class ResultsConsumptionTest extends MainTest {
         out = new ResultsConsumption(
                 resultsSqsName,
                 operationsBucket,
+                new AtomicInteger(0),
                 Region.US_EAST_1,
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()

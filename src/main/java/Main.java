@@ -41,6 +41,7 @@ public class Main {
                 infoLogger,
                 severLogger
         ).serve();
+        infoLogger.log("Manager done serving");
     }
 
     public static InfoLogger generateInfoLogger() throws IOException {

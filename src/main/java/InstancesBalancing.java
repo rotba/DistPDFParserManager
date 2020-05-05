@@ -152,7 +152,7 @@ public class InstancesBalancing implements Runnable {
                     int num = pendingTasksSnapShot.get() / n - workingInstances.get();
                     createWorkers(num);
                     workingInstances.addAndGet(num);
-                } else if (pendingTasksSnapShot.get() / workingInstances.get() < n) {
+                } else if (workingInstances.get() > 1 && pendingTasksSnapShot.get() / workingInstances.get() < n) {
                     int num = workingInstances.get() - pendingTasksSnapShot.get() / n;
                     deleteWorkers(num);
                     workingInstances.addAndGet(-num);

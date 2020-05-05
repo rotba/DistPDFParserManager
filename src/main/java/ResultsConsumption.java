@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResultsConsumption implements Runnable {
     private final String resultsSqsName;
@@ -30,8 +31,9 @@ public class ResultsConsumption implements Runnable {
     private SqsClient sqs;
     private List<Result> results;
     private Boolean working = true;
+    private AtomicInteger pendingTasks;
 
-    public ResultsConsumption(String resultsSqsName, String resultsBucket, Region usEast1, InfoLogger infoLogger, SeverLogger severLogger) {
+    public ResultsConsumption(String resultsSqsName, String resultsBucket, AtomicInteger pendingTasks, Region usEast1, InfoLogger infoLogger, SeverLogger severLogger) {
         this.resultsSqsName = resultsSqsName;
         this.resultsBucket = resultsBucket;
         this.usEast1 = usEast1;
@@ -43,6 +45,7 @@ public class ResultsConsumption implements Runnable {
                 GetQueueUrlRequest.builder().queueName(resultsSqsName).build()
         ).queueUrl();
         results = new ArrayList<>();
+        this.pendingTasks = pendingTasks;
     }
 
     @Override
@@ -128,7 +131,9 @@ public class ResultsConsumption implements Runnable {
     }
 
     private void consume(Message m) throws ParseException {
+        infoLogger.log("consuming a message");
         store(Result.create(m));
+        pendingTasks.set(pendingTasks.get()-1);
     }
 
 }

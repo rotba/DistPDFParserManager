@@ -3,6 +3,7 @@ import logging.SeverLogger;
 import org.apache.commons.cli.ParseException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -59,11 +60,11 @@ public class Manager {
                         .queueName(operationsResultsSqsName)
                         .build()
         );
-//        s3.createBucket(
-//                CreateBucketRequest.builder()
-//                        .bucket(operationsResultsBucket)
-//                        .build()
-//        );
+        s3.createBucket(
+                CreateBucketRequest.builder()
+                        .bucket(operationsBucket)
+                        .build()
+        );
         operationsProducer = new Thread(new OperationsProduction(
                 operationsSqsName,
                 operationsResultsSqsName,
@@ -83,14 +84,18 @@ public class Manager {
                 infoLogger,
                 severLogger
         ));
-//        operationsResultsConsumer = new Thread(new ResultsConsumption(
-//                operationsResultsSqsName,
-//                operationsBucket,
-//                tasks
-//
-//        ));
+        operationsResultsConsumer = new Thread(new ResultsConsumption(
+                operationsResultsSqsName,
+                operationsBucket,
+                numberOfPendingTasks,
+                Region.US_EAST_1,
+                infoLogger,
+                severLogger
+
+        ));
         operationsProducer.start();
         instancesBalancer.start();
+        operationsResultsConsumer.start();
     }
 
 //    private void createWorker(String msg) {
@@ -195,6 +200,7 @@ public class Manager {
                 severLogger.log("Parsing problem, probably failed parsing the message", e);
             }catch (InterruptedException e){
                 terminate();
+                return;
             }
         }
     }
