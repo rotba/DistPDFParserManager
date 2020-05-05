@@ -52,8 +52,8 @@ public class ResultsConsumptionTest extends MainTest {
         super.tearDown();
         theOutThread.interrupt();
         tearDownSqs(resultsSqsName);
-        tearDownBucket(operationsBucket, finalOutputKey);
-        tearDownBucket(tasksBucket, finalOutputKey);
+        tearDownBucket(operationsBucket);
+        tearDownBucket(tasksBucket);
     }
 
     @Test

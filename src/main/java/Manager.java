@@ -31,7 +31,7 @@ public class Manager {
     private Thread operationsResultsConsumer;
     private Thread instancesBalancer;
 
-    public Manager(String tasksSqsName, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
+    public Manager(String tasksSqsName,String kid, String sak, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
         this.tasksSqsName = tasksSqsName;
         this.workerAmi = workerAmi;
         this.workerTag = workerTag;
@@ -81,6 +81,9 @@ public class Manager {
                 operationsResultsSqsName,
                 Region.US_EAST_1,
                 workerAmi,
+                kid,
+                sak,
+                UserDataStrategy.NON_INITIAL,
                 infoLogger,
                 severLogger
         ));

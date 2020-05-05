@@ -26,6 +26,9 @@ public class InstancesBalancingTest extends MainTest {
                 resultsSqsName,
                 Region.US_EAST_1,
                 Main.WORKER_AMI,
+                IGNOREMECREDENTIALS.kid,
+                IGNOREMECREDENTIALS.sak,
+                UserDataStrategy.INITIAL,
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()
         );

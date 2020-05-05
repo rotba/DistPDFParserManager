@@ -52,13 +52,16 @@ public abstract class MainTest {
         tearDownWorker();
     }
 
-    protected void tearDownBucket(String bucket,String key) {
-        s3.deleteObject(
-                DeleteObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(key)
-                        .build()
-        );
+    protected void tearDownBucket(String bucket) {
+        for (S3Object s3o:
+             s3.listObjects(ListObjectsRequest.builder().bucket(bucket).build()).contents()) {
+            s3.deleteObject(
+                    DeleteObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(s3o.key())
+                            .build()
+            );
+        }
         s3.deleteBucket(
                 DeleteBucketRequest.builder()
                         .bucket(bucket)

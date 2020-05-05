@@ -65,7 +65,9 @@ public class ManagerSystemTest extends MainTest {
         {
             try {
                 Main.main(new String[]{
-                        "-i", tasksSqsName
+                        "-i", tasksSqsName,
+                        "-kid", IGNOREMECREDENTIALS.kid,
+                        "-sak", IGNOREMECREDENTIALS.sak
                 });
             } catch (IOException e) {
                 e.printStackTrace();
@@ -82,11 +84,14 @@ public class ManagerSystemTest extends MainTest {
                         .messageBody(newTask)
                         .build()
         );
-        Thread.sleep(40*1000);
+        Thread.sleep(100*1000);
         assertTrue(
                 Utils.htmlContains(
                         Utils.download(tasksBucket, finalOutputKey),
-                        "ToImage http://www.jewishfederations.org/local_includes/downloads/39497.pdf https://rotemb271-test-output-bucket2.s3.amazonaws.com/jesusandseder.png")
+                        String.format(
+                                "ToImage http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf https://%s.s3.amazonaws.com/%s",
+                                tasksBucket,finalOutputKey
+                        ))
         );
     }
 }

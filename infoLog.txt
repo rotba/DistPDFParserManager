@@ -1,20 +1,2 @@
-May 05, 2020 9:04:26 AM logging.Logger log
-INFO: Start
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: serving
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Terminating 100 instances
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Start consuming results
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Waiting for next task
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588658663825 -ki rotemb271TestTaskInputKey1588658663900 -ko rotemb271TestFinalOutputKey1588658666515
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Handling Task$NewTask@68beec82
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588658663825 -ki rotemb271TestTaskInputKey1588658663900 -ko rotemb271TestFinalOutputKey1588658666515
-May 05, 2020 9:04:30 AM logging.Logger log
-INFO: Waiting for next task
-May 05, 2020 9:04:32 AM logging.Logger log
-INFO: Creating 1 instances
+May 05, 2020 9:25:45 PM logging.Logger log
+INFO: Handling TEST

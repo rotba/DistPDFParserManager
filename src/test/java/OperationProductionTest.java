@@ -2,8 +2,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.model.*;
 
 import java.io.IOException;
@@ -17,10 +16,20 @@ public class OperationProductionTest extends MainTest{
 
     private Task.NewTask newT;
     private OperationsProduction out;
+    private String action;
+    private String inputFile;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        for (Bucket b:
+        s3.listBuckets(ListBucketsRequest.builder().build()).buckets()) {
+            for (S3Object s3o:
+                 s3.listObjects(ListObjectsRequest.builder().bucket(b.name()).build()).contents()) {
+                s3.deleteObject(DeleteObjectRequest.builder().bucket(b.name()).key(s3o.key()).build());
+            }
+            s3.deleteBucket(DeleteBucketRequest.builder().bucket(b.name()).build());
+        }
         sqs.createQueue(
                 CreateQueueRequest.builder()
                         .queueName(tasksSqsName)
@@ -31,10 +40,17 @@ public class OperationProductionTest extends MainTest{
                         .queueName(operationSqsName)
                         .build()
         );
+        action = "ToImage";
+        inputFile = "http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf";
         sqs.sendMessage(
                 SendMessageRequest.builder()
                         .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(tasksSqsName).build()).queueUrl())
-                        .messageBody("ToImage\thttp://www.jewishfederations.org/local_includes/downloads/39497.pdf")
+                        .messageBody(
+                                String.format(
+                                        "%s\t%s",
+                                        action, inputFile
+                                )
+                        )
                         .build()
         );
 //        Manager outManager = new Manager(tasksSqsName,Main.WORKER_AMI,Main.WORKER_TAG,Main.generateInfoLogger(),Main.generateSeverLogger());
@@ -73,23 +89,23 @@ public class OperationProductionTest extends MainTest{
         super.tearDown();
         tearDownSqs(tasksSqsName);
         tearDownSqs(operationSqsName);
-        tearDownBucket(operationsBucket, operationResultKey);
-        tearDownBucket(tasksBucket, taskInputKey);
+        tearDownBucket(operationsBucket);
+        tearDownBucket(tasksBucket);
     }
 
     @Test
     public void testOneFileTheWorkerGetsValidOperation() throws IOException {
         out.handleNewTask(newT);
         Utils.waitDispatchWorker();
-        operationResultKey = "http://www.jewishfederations.org/local_includes/downloads/39497.pdf";
+        String lastGivenTS = out.getLastGivenTimeStamp();
         assertTrue(
                 sqsContainsOperation(
                         operationSqsName,
                         new String[]{" ",
-                                "-a", "ToImage",
-                                "-i", operationResultKey,
+                                "-a", action,
+                                "-i", inputFile,
                                 "-b", operationsBucket,
-                                "-k", operationResultKey,
+                                "-k", lastGivenTS,
                                 "-t", "TRYING_TO_AVOID",
                                 "-fb", tasksBucket,
                                 "-fk", finalOutputKey

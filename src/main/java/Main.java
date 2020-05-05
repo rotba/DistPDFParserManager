@@ -12,7 +12,8 @@ import java.util.Base64;
 import java.util.Date;
 
 public class Main {
-    public static final String WORKER_AMI = "ami-0062816003cfcacd3";
+    public static final String WORKER_AMI = "ami-0b184f847abd657df";
+    public static final String WORKER_AMI_NON_INITIAL = "ami-00d82c8cbb02de999";
     public static final String WORKER_TAG = "Worker";
     static SeverLogger severLogger;
     static InfoLogger infoLogger;
@@ -25,6 +26,12 @@ public class Main {
         Option inputTasksSqs = new Option("i", "tasks", true, "input tasks sqs");
         inputTasksSqs.setRequired(true);
         options.addOption(inputTasksSqs);
+        Option accessKeyId = new Option("kid", "keyId", true, "access key id");
+        accessKeyId.setRequired(true);
+        options.addOption(accessKeyId);
+        Option secretAccessKey = new Option("sak", "secret_access_key", true, "secret access key");
+        secretAccessKey.setRequired(true);
+        options.addOption(secretAccessKey);
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
         try {
@@ -36,7 +43,9 @@ public class Main {
         }
         new Manager(
                 cmd.getOptionValue("i"),
-                WORKER_AMI,
+                cmd.getOptionValue("kid"),
+                cmd.getOptionValue("sak"),
+                WORKER_AMI_NON_INITIAL,
                 WORKER_TAG,
                 infoLogger,
                 severLogger

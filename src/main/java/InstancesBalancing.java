@@ -16,16 +16,22 @@ public class InstancesBalancing implements Runnable {
     private final String operationsSqs;
     private final String notificationsSqs;
     private final String workerAmi;
+    private final String kid;
+    private final String sak;
+    private final UserDataStrategy strategy;
     private final InfoLogger infoLogger;
     private final SeverLogger severLogger;
     private static int n;
     private Ec2Client ec2Client;
     private AtomicInteger workingInstances;
 
-    public InstancesBalancing(AtomicInteger pendingTasks, String operationsSqs , String notificationsSqs, Region region, String workerAmi, InfoLogger infoLogger, SeverLogger severLogger) {
+    public InstancesBalancing(AtomicInteger pendingTasks, String operationsSqs , String notificationsSqs, Region region, String workerAmi,String kid, String sak,UserDataStrategy strategy ,InfoLogger infoLogger, SeverLogger severLogger) {
         this.pendingTasks = pendingTasks;
         this.notificationsSqs = notificationsSqs;
         this.workerAmi = workerAmi;
+        this.kid = kid;
+        this.sak = sak;
+        this.strategy = strategy;
         this.infoLogger = infoLogger;
         this.severLogger = severLogger;
         n = LOAD_FACTOR;
@@ -33,14 +39,65 @@ public class InstancesBalancing implements Runnable {
         this.operationsSqs = operationsSqs;
         workingInstances = new AtomicInteger(0);
     }
-    private static String getWorkerScript(String arg) {
+    private String getWorkerScript(String arg) {
         //        String awsAccessKeyId = args[1];
 //        String awsSecretAccessKey = args[2];
+        switch (strategy){
+            case INITIAL:
+                return intialWorkerScript(arg);
+            case NON_INITIAL:
+                return nonInitialWorkerScript(arg);
+            case INITIAL_NO_TESTS_DEP:
+                return initialNoTestsWorkerScript(arg);
+            default:
+                return null;
+        }
+    }
+
+    private String initialNoTestsWorkerScript(String arg) {
         return String.join("\n",
                 "#!/bin/bash",
                 "set -e -x",
-//                String.format("aws configure set aws_access_key_id %s", awsAccessKeyId),
-//                String.format("aws configure set aws_secret_access_key %s", awsSecretAccessKey),
+                String.format("aws configure set aws_access_key_id %s",kid ),
+                String.format("aws configure set aws_secret_access_key %s", sak),
+                "cd ..",
+                "cd /home/ec2-user",
+                "if [ -d \"DistPDFParser\" ]; then echo \"Repo exists\" ;",
+                "else",
+                "git clone https://github.com/rotba/DistPDFParser.git",
+                "cd DistPDFParser",
+                "git submodule init",
+                "git submodule update worker;",
+                "fi",
+                "cd worker",
+                "git pull origin master",
+                "mvn install DskipTests",
+                "cd target",
+                String.format("java -jar theJar.jar %s", arg)
+        );
+    }
+
+    private String nonInitialWorkerScript(String arg) {
+        return String.join("\n",
+                "#!/bin/bash",
+                "set -e -x",
+                String.format("aws configure set aws_access_key_id %s",kid ),
+                String.format("aws configure set aws_secret_access_key %s", sak),
+                "cd ..",
+                "cd /home/ec2-user",
+                "cd DistPDFParser",
+                "cd worker",
+                "git pull origin master",
+                String.format("java -jar theJar.jar %s", arg)
+        );
+    }
+
+    private String intialWorkerScript(String arg) {
+        return String.join("\n",
+                "#!/bin/bash",
+                "set -e -x",
+                String.format("aws configure set aws_access_key_id %s",kid ),
+                String.format("aws configure set aws_secret_access_key %s", sak),
                 "cd ..",
                 "cd /home/ec2-user",
                 "if [ -d \"DistPDFParser\" ]; then echo \"Repo exists\" ;",

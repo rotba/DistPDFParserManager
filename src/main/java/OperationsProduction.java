@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,6 +26,7 @@ public class OperationsProduction implements Runnable {
     private final InfoLogger infoLogger;
     private final SeverLogger severLogger;
     private final String operationsQUrl;
+    private volatile String lastGivenTimeStamp;
 
     public OperationsProduction(String operationsSqsName, String resultsSqsName, String resultsBucket, AtomicInteger numOfPendingOperations, ConcurrentLinkedQueue<Task.NewTask> queue, Region region, InfoLogger infoLogger, SeverLogger severLogger) {
         this.operationsSqsName = operationsSqsName;
@@ -38,6 +40,8 @@ public class OperationsProduction implements Runnable {
         operationsQUrl = sqs.getQueueUrl(
                 GetQueueUrlRequest.builder().queueName(operationsSqsName).build()
         ).queueUrl();
+        lastGivenTimeStamp = null;
+
     }
 
     @Override
@@ -85,11 +89,13 @@ public class OperationsProduction implements Runnable {
 
     private void produceOperation(String nextLine,String outputBucket,String outputKey) {
         String[] arr = nextLine.split("\\s+");
+        String timestamp = String.valueOf(new Date().getTime());
+        lastGivenTimeStamp = timestamp;
         String body = String.join(" ",
                 "-a", arr[0],
                 "-i", arr[1],
                 "-b", resultsBucket,
-                "-k", arr[1],
+                "-k", timestamp,
                 "-t", Instant.now().toString(),
                 "-fb", outputBucket,
                 "-fk", outputKey
@@ -103,5 +109,8 @@ public class OperationsProduction implements Runnable {
         synchronized (numOfPendingOperations){
             numOfPendingOperations.set(numOfPendingOperations.get()+1);
         }
+    }
+    public String getLastGivenTimeStamp(){
+        return lastGivenTimeStamp;
     }
 }
