@@ -6,6 +6,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.utils.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,6 +29,8 @@ public class OperationsProduction implements Runnable {
     private final SeverLogger severLogger;
     private final String operationsQUrl;
     private volatile String lastGivenTimeStamp;
+    private HashMap<Pair<String,String>,Integer> operationsLeftCounter;
+
 
     public OperationsProduction(String operationsSqsName, String resultsSqsName, String resultsBucket, AtomicInteger numOfPendingOperations, ConcurrentLinkedQueue<Task.NewTask> queue, Region region, InfoLogger infoLogger, SeverLogger severLogger) {
         this.operationsSqsName = operationsSqsName;
@@ -41,7 +45,7 @@ public class OperationsProduction implements Runnable {
                 GetQueueUrlRequest.builder().queueName(operationsSqsName).build()
         ).queueUrl();
         lastGivenTimeStamp = null;
-
+        operationsLeftCounter = new HashMap<>();
     }
 
     @Override

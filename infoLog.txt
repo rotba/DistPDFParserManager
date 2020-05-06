@@ -1,34 +1,34 @@
-May 06, 2020 7:50:15 AM logging.Logger log
+May 06, 2020 7:58:59 AM logging.Logger log
 INFO: Start
-May 06, 2020 7:50:18 AM logging.Logger log
+May 06, 2020 7:59:03 AM logging.Logger log
 INFO: serving
-May 06, 2020 7:50:18 AM logging.Logger log
-INFO: Start consuming results
-May 06, 2020 7:50:18 AM logging.Logger log
+May 06, 2020 7:59:03 AM logging.Logger log
 INFO: Terminating 100 instances
-May 06, 2020 7:50:18 AM logging.Logger log
+May 06, 2020 7:59:03 AM logging.Logger log
+INFO: Start consuming results
+May 06, 2020 7:59:03 AM logging.Logger log
 INFO: Waiting for next task
-May 06, 2020 7:50:19 AM logging.Logger log
-INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588740612694 -ki rotemb271TestTaskInputKey1588740612785 -ko rotemb271TestFinalOutputKey1588740615380
-May 06, 2020 7:50:19 AM logging.Logger log
-INFO: Handling Task$NewTask@41f5730b
-May 06, 2020 7:50:19 AM logging.Logger log
-INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588740612694 -ki rotemb271TestTaskInputKey1588740612785 -ko rotemb271TestFinalOutputKey1588740615380
-May 06, 2020 7:50:19 AM logging.Logger log
+May 06, 2020 7:59:03 AM logging.Logger log
+INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
+May 06, 2020 7:59:03 AM logging.Logger log
+INFO: Handling Task$NewTask@74804709
+May 06, 2020 7:59:03 AM logging.Logger log
+INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
+May 06, 2020 7:59:03 AM logging.Logger log
 INFO: Waiting for next task
-May 06, 2020 7:50:20 AM logging.Logger log
+May 06, 2020 7:59:04 AM logging.Logger log
 INFO: Creating 1 instances
-May 06, 2020 7:51:55 AM logging.Logger log
+May 06, 2020 7:59:57 AM logging.Logger log
 INFO: consuming a message
-May 06, 2020 7:51:55 AM logging.Logger log
-INFO: The message is -a ToImage -i http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf -s SUCCESS -t 2020-05-06T04:50:19.751844Z -d success -u https://rotemb271-operations-results-bucket1588740616048.s3.amazonaws.com/1588740619751 -b rotemb271-test-tasks-bucket1588740612694 -k rotemb271TestFinalOutputKey1588740615380
-May 06, 2020 7:51:57 AM logging.Logger log
-INFO: Got message: -t terminate -b rotemb271-test-tasks-bucket1588740612694 -ki rotemb271TestTaskInputKey1588740612785 -ko rotemb271TestFinalOutputKey1588740615380
-May 06, 2020 7:51:57 AM logging.Logger log
-INFO: Handling Task$Terminate@4ba725b
-May 06, 2020 7:51:57 AM logging.Logger log
+May 06, 2020 7:59:57 AM logging.Logger log
+INFO: The message is -a ToImage -i http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf -s SUCCESS -t 2020-05-06T04:59:03.846522Z -d success -u https://rotemb271-operations-results-bucket1588741139933.s3.amazonaws.com/1588741143846 -b rotemb271-test-tasks-bucket1588741136655 -k rotemb271TestFinalOutputKey1588741139269
+May 06, 2020 8:00:50 AM logging.Logger log
+INFO: Got message: -t terminate -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
+May 06, 2020 8:00:50 AM logging.Logger log
+INFO: Handling Task$Terminate@73e8d12
+May 06, 2020 8:00:50 AM logging.Logger log
 INFO: terminating
-May 06, 2020 7:51:57 AM logging.Logger log
-INFO: Strored final results in https://rotemb271-test-tasks-bucket1588740612694.s3.amazonaws.com/rotemb271TestFinalOutputKey1588740615380
-May 06, 2020 7:51:58 AM logging.Logger log
+May 06, 2020 8:00:51 AM logging.Logger log
+INFO: Strored final results in https://rotemb271-test-tasks-bucket1588741136655.s3.amazonaws.com/rotemb271TestFinalOutputKey1588741139269
+May 06, 2020 8:00:52 AM logging.Logger log
 INFO: Waiting for next task
