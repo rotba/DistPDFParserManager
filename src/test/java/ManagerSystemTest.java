@@ -106,11 +106,6 @@ public class ManagerSystemTest extends MainTest {
                                 Manager.FORTETSINGgetOperationsBucket(),""
                         ))
         );
-        sqs.sendMessage(
-                SendMessageRequest.builder()
-                        .queueUrl(tasksSQSQUrl)
-                        .messageBody(terminate)
-                        .build()
-        );
+
     }
 }
