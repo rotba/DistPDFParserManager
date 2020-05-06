@@ -19,6 +19,7 @@ public class Manager {
     private String tasksQueueUrl;
     private String operationsResultsSqsName;
     private String operationsBucket;
+    private static  String staticOperationsBucket;
     private String workerAmi;
     private String workerTag;
     private final InfoLogger infoLogger;
@@ -32,7 +33,7 @@ public class Manager {
     private Thread operationsResultsConsumer;
     private Thread instancesBalancer;
 
-    public Manager(String tasksSqsName,String kid, String sak, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
+    public Manager(String tasksSqsName, String kid, String sak, String workerAmi, String workerTag, InfoLogger infoLogger, SeverLogger severLogger) {
         this.tasksSqsName = tasksSqsName;
         this.workerAmi = workerAmi;
         this.workerTag = workerTag;
@@ -51,6 +52,7 @@ public class Manager {
         operationsSqsName = "rotemb271Operations" + new Date().getTime();
         operationsResultsSqsName = "rotemb271OperationResults" + new Date().getTime();
         operationsBucket = "rotemb271-operations-results-bucket" + new Date().getTime();
+        staticOperationsBucket = operationsBucket;
         sqs.createQueue(
                 CreateQueueRequest.builder()
                         .queueName(operationsSqsName)
@@ -102,6 +104,12 @@ public class Manager {
         instancesBalancer.start();
         operationsResultsConsumer.start();
     }
+
+
+    public static String FORTETSINGgetOperationsBucket() {
+        return staticOperationsBucket;
+    }
+
 
 //    private void createWorker(String msg) {
 //        Ec2Client ec2 = Ec2Client.create();
@@ -170,11 +178,6 @@ public class Manager {
     private void terminate() {
         infoLogger.log("terminating");
         resultsConsumption.sealConsumption();
-        sqs.deleteQueue(
-                DeleteQueueRequest.builder()
-                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsSqsName).build()).queueUrl())
-                        .build()
-        );
         sqs.deleteQueue(
                 DeleteQueueRequest.builder()
                         .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())

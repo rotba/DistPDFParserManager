@@ -103,7 +103,7 @@ public class ManagerSystemTest extends MainTest {
                         Utils.download(tasksBucket, finalOutputKey),
                         String.format(
                                 "ToImage http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf https://%s.s3.amazonaws.com/%s",
-                                tasksBucket,finalOutputKey
+                                Manager.FORTETSINGgetOperationsBucket(),finalOutputKey
                         ))
         );
     }
