@@ -187,14 +187,11 @@ public class Manager {
         terminate();
     }
 
-    private void terminate() {
-//        infoLogger.log("terminating");
-//        resultsConsumption.sealConsumption();
-//        sqs.deleteQueue(
-//                DeleteQueueRequest.builder()
-//                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())
-//                        .build()
-//        );
+    public void terminate() {
+        infoLogger.log("terminating");
+        operationsResultsConsumer.interrupt();
+        operationsResultsConsumer.interrupt();
+        instancesBalancer.interrupt();
     }
 
     public void serve() {

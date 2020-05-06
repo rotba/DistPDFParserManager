@@ -91,12 +91,12 @@ public class ManagerSystemTest extends MainTest {
                         .build()
         );
         Thread.sleep(100*1000);
-//        sqs.sendMessage(
-//                SendMessageRequest.builder()
-//                        .queueUrl(tasksSQSQUrl)
-//                        .messageBody(terminate)
-//                        .build()
-//        );
+        sqs.sendMessage(
+                SendMessageRequest.builder()
+                        .queueUrl(tasksSQSQUrl)
+                        .messageBody(terminate)
+                        .build()
+        );
         Thread.sleep(20*1000);
         assertTrue(
                 Utils.htmlContains(
@@ -105,6 +105,12 @@ public class ManagerSystemTest extends MainTest {
                                 "ToImage http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf https://%s.s3.amazonaws.com/%s",
                                 Manager.FORTETSINGgetOperationsBucket(),""
                         ))
+        );
+        sqs.sendMessage(
+                SendMessageRequest.builder()
+                        .queueUrl(tasksSQSQUrl)
+                        .messageBody(terminate)
+                        .build()
         );
     }
 }
