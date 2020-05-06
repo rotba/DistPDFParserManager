@@ -197,6 +197,7 @@ public class InstancesBalancing implements Runnable {
         while (true){
             try {
                 workingInstances.set(checkNumberOfWorkers());
+                infoLogger.log(String.format("balancer counted %d instances", workingInstances.get()));
                 synchronized (this.pendingTasks) {
                     pendingTasksSnapShot.set(this.pendingTasks.intValue());
                 }
@@ -205,15 +206,21 @@ public class InstancesBalancing implements Runnable {
                 } else if (workingInstances.get() == 0 && pendingTasksSnapShot.get() > 0) {
                     createWorkers(1);
                     workingInstances.set(1);
-                } else if (pendingTasksSnapShot.get() / workingInstances.get() > n) {
-                    int num = pendingTasksSnapShot.get() / n - workingInstances.get();
-                    createWorkers(num);
-                    workingInstances.addAndGet(num);
-                } else if (workingInstances.get() > 1 && pendingTasksSnapShot.get() / workingInstances.get() < n) {
-                    int num = workingInstances.get() - pendingTasksSnapShot.get() / n;
-                    deleteWorkers(num);
-                    workingInstances.addAndGet(-num);
+                }else {
+                    int neccesserayNum = (int)Math.ceil(
+                            Float.valueOf(pendingTasksSnapShot.get())/Float.valueOf(n)
+                    );
+                    if(neccesserayNum > workingInstances.get()){
+                        int num  = neccesserayNum - workingInstances.get();
+                        createWorkers(num);
+                        workingInstances.set(workingInstances.get() + num);
+                    }else if(neccesserayNum < workingInstances.get()){
+                        int num  = workingInstances.get() - neccesserayNum ;
+                        deleteWorkers(num);
+                        workingInstances.set(workingInstances.get() - num);
+                    }
                 }
+                Thread.sleep(5*1000);
             }catch (SdkClientException e){
                 severLogger.log("InstancesBalancing - Unexpected", e);
                 return;

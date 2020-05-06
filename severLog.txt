@@ -1,0 +1,7 @@
+May 06, 2020 9:34:42 AM logging.Logger log
+SEVERE: [Ljava.lang.StackTraceElement;@1371ffff
+java.lang.InterruptedException: sleep interrupted
+	at java.base/java.lang.Thread.sleep(Native Method)
+	at InstancesBalancing.run(InstancesBalancing.java:223)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+

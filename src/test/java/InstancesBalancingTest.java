@@ -51,12 +51,14 @@ public class InstancesBalancingTest extends MainTest {
         theOutThread.start();
         while (out.forTestingGetNumOfInstances() < 2) {
         }
+        Thread.sleep(5*1000);
         assertEquals(2, countWorkers());
         synchronized (pendingTasks){
             pendingTasks.set(InstancesBalancing.LOAD_FACTOR * 1);
         }
         while (out.forTestingGetNumOfInstances() > 1) {
         }
+        Thread.sleep(5*1000);
         assertEquals(1, countWorkers());
     }
 }
