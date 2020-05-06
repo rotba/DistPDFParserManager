@@ -1,34 +1,34 @@
-May 06, 2020 7:58:59 AM logging.Logger log
+May 06, 2020 8:38:08 AM logging.Logger log
 INFO: Start
-May 06, 2020 7:59:03 AM logging.Logger log
+May 06, 2020 8:38:12 AM logging.Logger log
 INFO: serving
-May 06, 2020 7:59:03 AM logging.Logger log
+May 06, 2020 8:38:12 AM logging.Logger log
 INFO: Terminating 100 instances
-May 06, 2020 7:59:03 AM logging.Logger log
+May 06, 2020 8:38:12 AM logging.Logger log
 INFO: Start consuming results
-May 06, 2020 7:59:03 AM logging.Logger log
+May 06, 2020 8:38:12 AM logging.Logger log
 INFO: Waiting for next task
-May 06, 2020 7:59:03 AM logging.Logger log
-INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
-May 06, 2020 7:59:03 AM logging.Logger log
-INFO: Handling Task$NewTask@74804709
-May 06, 2020 7:59:03 AM logging.Logger log
-INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
-May 06, 2020 7:59:03 AM logging.Logger log
+May 06, 2020 8:38:12 AM logging.Logger log
+INFO: Got message: -t new_task -b rotemb271-test-tasks-bucket1588743485750 -ki rotemb271TestTaskInputKey1588743485839 -ko rotemb271TestFinalOutputKey1588743488503
+May 06, 2020 8:38:12 AM logging.Logger log
+INFO: Handling Task$NewTask@18c47424
+May 06, 2020 8:38:12 AM logging.Logger log
+INFO: Handling -t new_task -b rotemb271-test-tasks-bucket1588743485750 -ki rotemb271TestTaskInputKey1588743485839 -ko rotemb271TestFinalOutputKey1588743488503
+May 06, 2020 8:38:12 AM logging.Logger log
 INFO: Waiting for next task
-May 06, 2020 7:59:04 AM logging.Logger log
+May 06, 2020 8:38:14 AM logging.Logger log
 INFO: Creating 1 instances
-May 06, 2020 7:59:57 AM logging.Logger log
+May 06, 2020 8:39:29 AM logging.Logger log
 INFO: consuming a message
-May 06, 2020 7:59:57 AM logging.Logger log
-INFO: The message is -a ToImage -i http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf -s SUCCESS -t 2020-05-06T04:59:03.846522Z -d success -u https://rotemb271-operations-results-bucket1588741139933.s3.amazonaws.com/1588741143846 -b rotemb271-test-tasks-bucket1588741136655 -k rotemb271TestFinalOutputKey1588741139269
-May 06, 2020 8:00:50 AM logging.Logger log
-INFO: Got message: -t terminate -b rotemb271-test-tasks-bucket1588741136655 -ki rotemb271TestTaskInputKey1588741136739 -ko rotemb271TestFinalOutputKey1588741139269
-May 06, 2020 8:00:50 AM logging.Logger log
-INFO: Handling Task$Terminate@73e8d12
-May 06, 2020 8:00:50 AM logging.Logger log
-INFO: terminating
-May 06, 2020 8:00:51 AM logging.Logger log
-INFO: Strored final results in https://rotemb271-test-tasks-bucket1588741136655.s3.amazonaws.com/rotemb271TestFinalOutputKey1588741139269
-May 06, 2020 8:00:52 AM logging.Logger log
-INFO: Waiting for next task
+May 06, 2020 8:39:29 AM logging.Logger log
+INFO: The message is -a ToImage -i http://www.bethelnewton.org/images/Passover_Guide_BOOKLET.pdf -s SUCCESS -t 2020-05-06T05:38:13.054456Z -d success -u https://rotemb271-operations-results-bucket1588743489228.s3.amazonaws.com/1588743493054 -b rotemb271-test-tasks-bucket1588743485750 -k rotemb271TestFinalOutputKey1588743488503
+May 06, 2020 8:39:29 AM logging.Logger log
+INFO: Decrementing number of pending tasks for rotemb271-test-tasks-bucket1588743485750 rotemb271TestFinalOutputKey1588743488503
+May 06, 2020 8:39:29 AM logging.Logger log
+INFO: And now the number of pending tasks for rotemb271-test-tasks-bucket1588743485750 rotemb271TestFinalOutputKey1588743488503 is 0
+May 06, 2020 8:39:29 AM logging.Logger log
+INFO: Sealing consumption for rotemb271-test-tasks-bucket1588743485750, rotemb271TestFinalOutputKey1588743488503
+May 06, 2020 8:39:29 AM logging.Logger log
+INFO: Number of pending tasks for rotemb271-test-tasks-bucket1588743485750 rotemb271TestFinalOutputKey1588743488503 is 0
+May 06, 2020 8:39:30 AM logging.Logger log
+INFO: Strored final results in https://rotemb271-test-tasks-bucket1588743485750.s3.amazonaws.com/rotemb271TestFinalOutputKey1588743488503

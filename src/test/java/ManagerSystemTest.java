@@ -91,12 +91,12 @@ public class ManagerSystemTest extends MainTest {
                         .build()
         );
         Thread.sleep(100*1000);
-        sqs.sendMessage(
-                SendMessageRequest.builder()
-                        .queueUrl(tasksSQSQUrl)
-                        .messageBody(terminate)
-                        .build()
-        );
+//        sqs.sendMessage(
+//                SendMessageRequest.builder()
+//                        .queueUrl(tasksSQSQUrl)
+//                        .messageBody(terminate)
+//                        .build()
+//        );
         Thread.sleep(20*1000);
         assertTrue(
                 Utils.htmlContains(

@@ -68,7 +68,7 @@ public class Manager {
                         .bucket(operationsBucket)
                         .build()
         );
-        operationsProducer = new Thread(new OperationsProduction(
+        OperationsProduction operationsProduction = new OperationsProduction(
                 operationsSqsName,
                 operationsResultsSqsName,
                 operationsBucket,
@@ -77,7 +77,8 @@ public class Manager {
                 Region.US_EAST_1,
                 infoLogger,
                 severLogger
-        ));
+        );
+        operationsProducer = new Thread(operationsProduction);
         instancesBalancer = new Thread(new InstancesBalancing(
                 numberOfPendingTasks,
                 operationsSqsName,
@@ -95,6 +96,17 @@ public class Manager {
                 operationsBucket,
                 numberOfPendingTasks,
                 Region.US_EAST_1,
+                new PendingTasksSocket() {
+                    @Override
+                    public Integer numberOfPendingOperationsLeft(String b, String k) {
+                        return operationsProduction.numberOfPendingOperationsLeft(b,k);
+                    }
+
+                    @Override
+                    public void operationFulfilled(String b, String k) {
+                        operationsProduction.operationFulfilled(b,k);
+                    }
+                },
                 infoLogger,
                 severLogger
 
@@ -176,13 +188,13 @@ public class Manager {
     }
 
     private void terminate() {
-        infoLogger.log("terminating");
-        resultsConsumption.sealConsumption();
-        sqs.deleteQueue(
-                DeleteQueueRequest.builder()
-                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())
-                        .build()
-        );
+//        infoLogger.log("terminating");
+//        resultsConsumption.sealConsumption();
+//        sqs.deleteQueue(
+//                DeleteQueueRequest.builder()
+//                        .queueUrl(sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(operationsResultsSqsName).build()).queueUrl())
+//                        .build()
+//        );
     }
 
     public void serve() {
@@ -201,5 +213,9 @@ public class Manager {
                 return;
             }
         }
+    }
+    interface PendingTasksSocket{
+        Integer numberOfPendingOperationsLeft(String b, String k);
+        void operationFulfilled(String b, String k);
     }
 }

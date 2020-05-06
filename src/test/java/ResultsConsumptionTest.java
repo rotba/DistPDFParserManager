@@ -42,6 +42,17 @@ public class ResultsConsumptionTest extends MainTest {
                 operationsBucket,
                 new AtomicInteger(0),
                 Region.US_EAST_1,
+                new Manager.PendingTasksSocket() {
+                    @Override
+                    public Integer numberOfPendingOperationsLeft(String b, String k) {
+                        return 1;
+                    }
+
+                    @Override
+                    public void operationFulfilled(String b, String k) {
+
+                    }
+                },
                 Main.generateInfoLogger(),
                 Main.generateSeverLogger()
         );
@@ -78,7 +89,7 @@ public class ResultsConsumptionTest extends MainTest {
         theOutThread = new Thread(out);
         theOutThread.start();
         Utils.waitDispatchWorker();
-        out.sealConsumption();
+        out.sealConsumption(tasksBucket, finalOutputKey);
         assertTrue(
                 Utils.htmlContains(
                         Utils.download(tasksBucket, finalOutputKey),
